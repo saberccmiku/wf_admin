@@ -14,8 +14,8 @@
         </template>
       </el-table-column>
       <el-table-column align="header-center" label="描述">
-        <template slot-scope="scope">
-          {{ scope.row.description }}
+        <template>
+          {{ 权限很大 }}
         </template>
       </el-table-column>
       <el-table-column align="center" label="操作">

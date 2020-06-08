@@ -6,15 +6,15 @@
         <h3 class="title">工作流平台系统</h3>
       </div>
 
-      <el-form-item prop="username">
+      <el-form-item prop="firstName">
         <span class="svg-container">
           <svg-icon icon-class="user" />
         </span>
         <el-input
-          ref="username"
-          v-model="loginForm.username"
-          placeholder="Username"
-          name="username"
+          ref="firstName"
+          v-model="loginForm.firstName"
+          placeholder="firstName"
+          name="firstName"
           type="text"
           tabindex="1"
           autocomplete="on"
@@ -82,11 +82,11 @@ export default {
     }
     return {
       loginForm: {
-        username: 'admin',
-        password: '111111'
+        firstName: 'admin',
+        password: '123456'
       },
       loginRules: {
-        username: [{ required: true, trigger: 'blur', validator: validateUsername }],
+        firstName: [{ required: true, trigger: 'blur', validator: validateUsername }],
         password: [{ required: true, trigger: 'blur', validator: validatePassword }]
       },
       passwordType: 'password',
@@ -113,8 +113,8 @@ export default {
     // window.addEventListener('storage', this.afterQRScan)
   },
   mounted() {
-    if (this.loginForm.username === '') {
-      this.$refs.username.focus()
+    if (this.loginForm.firstName === '') {
+      this.$refs.firstName.focus()
     } else if (this.loginForm.password === '') {
       this.$refs.password.focus()
     }

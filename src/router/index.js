@@ -147,6 +147,50 @@ export const asyncRoutes = [
       }
     ]
   },
+  {
+    path: '/icons',
+    component: Layout,
+    redirect: '/icons/index',
+    alwaysShow: true, // will always show the root menu
+    name: 'icons',
+    meta: {
+      title: '图库',
+      icon: 'icon'
+    },
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/icons/index'),
+        name: 'IconsIndex',
+        meta: {
+          title: '图标列表',
+          icon: 'list'
+        }
+      }
+    ]
+  },
+  {
+    path: '/interfaces',
+    component: Layout,
+    redirect: '/interfaces/list',
+    alwaysShow: true, // will always show the root menu
+    name: 'interfaces',
+    meta: {
+      title: '接口文档',
+      icon: 'icon'
+    },
+    children: [
+      {
+        path: 'interfaces',
+        component: () => import('@/views/interface/list'),
+        name: 'IconsIndex',
+        meta: {
+          title: '接口列表',
+          icon: 'list'
+        }
+      }
+    ]
+  },
 
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }

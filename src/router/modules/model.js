@@ -9,20 +9,20 @@ const modelRouter = {
   name: 'Table',
   meta: {
     title: '模型管理',
-    icon: 'table'
+    icon: 'tree'
   },
   children: [
     {
       path: 'model-list',
       component: () => import('@/views/model/model-list'),
       name: 'ModelList',
-      meta: { title: '模型列表' }
+      meta: { title: '模型列表', icon: 'list' }
     },
     {
       path: 'process-def',
       component: () => import('@/views/model/procdef-list'),
       name: 'ProcdefList',
-      meta: { title: '流程定义' }
+      meta: { title: '流程定义', icon: 'tree-table' }
     }
   ]
 }

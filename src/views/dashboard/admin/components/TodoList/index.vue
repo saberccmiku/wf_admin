@@ -2,7 +2,7 @@
   <section class="todoapp">
     <!-- header -->
     <header class="header">
-      <input class="new-todo" autocomplete="off" placeholder="Todo List" @keyup.enter="addTodo">
+      <input class="new-todo" autocomplete="off" placeholder="快速办理" @keyup.enter="addTodo">
     </header>
     <!-- main section -->
     <section v-show="todos.length" class="main">
@@ -23,7 +23,7 @@
     <footer v-show="todos.length" class="footer">
       <span class="todo-count">
         <strong>{{ remaining }}</strong>
-        {{ remaining | pluralize('item') }} left
+        {{ remaining | pluralize('件') }} 待办
       </span>
       <ul class="filters">
         <li v-for="(val, key) in filters" :key="key">
@@ -42,29 +42,29 @@ import Todo from './Todo.vue'
 
 const STORAGE_KEY = 'todos'
 const filters = {
-  all: todos => todos,
-  active: todos => todos.filter(todo => !todo.done),
-  completed: todos => todos.filter(todo => todo.done)
+  全部: todos => todos,
+  待办: todos => todos.filter(todo => !todo.done),
+  已办: todos => todos.filter(todo => todo.done)
 }
 const defalutList = [
-  { text: 'star this repository', done: false },
-  { text: 'fork this repository', done: false },
-  { text: 'follow author', done: false },
-  { text: 'vue-element-admin', done: true },
-  { text: 'vue', done: true },
-  { text: 'element-ui', done: true },
-  { text: 'axios', done: true },
-  { text: 'webpack', done: true }
+  { text: '关于进一步加强疫情管控的实施管理计划', done: false },
+  { text: '落实中央关于推进地摊经济的方针策略', done: false },
+  { text: '来自一名武汉儿童的感恩信', done: false },
+  { text: '查漏补缺进度', done: true },
+  { text: '开放经济三重音', done: true },
+  { text: '李兰娟专家参与武汉核酸检查追访', done: true },
+  { text: '工作流平台何时完成', done: true },
+  { text: '写前端虽然有意思，但也耗时', done: true }
 ]
 export default {
   components: { Todo },
   filters: {
-    pluralize: (n, w) => n === 1 ? w : w + 's',
+    pluralize: (n, w) => n === 1 ? w : w,
     capitalize: s => s.charAt(0).toUpperCase() + s.slice(1)
   },
   data() {
     return {
-      visibility: 'all',
+      visibility: '全部',
       filters,
       // todos: JSON.parse(window.localStorage.getItem(STORAGE_KEY)) || defalutList
       todos: defalutList
