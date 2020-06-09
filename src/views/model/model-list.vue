@@ -54,7 +54,7 @@
       </el-table-column>
       <el-table-column label="版本" width="110px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.version }}</span>
+          <span class="link">{{ row.version }}</span>
         </template>
       </el-table-column>
       <el-table-column label="类型" width="80px">
@@ -79,10 +79,10 @@
           <el-button type="primary" size="mini" @click="handleUpdate(row)">
             编辑
           </el-button>
-          <el-button v-if="row.key=='草稿'" size="mini" type="success" @click="handleModifyStatus(row,'published')">
+          <el-button v-if="row.key=='草稿'" size="mini" type="success" @click="handlePublish(row)">
             发布
           </el-button>
-          <el-button v-if="row.key!=='草稿'" size="mini" @click="handleModifyStatus(row,'draft')">
+          <el-button v-if="row.key!=='草稿'" size="mini" @click="handlePublish(row)">
             停止
           </el-button>
           <el-button size="mini" type="danger" @click="handleDelete(row)">
@@ -97,12 +97,7 @@
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <iframe src="http://localhost:10086/workflow/modeler.html?modelId=95001" height="100%" width="100%" name="iframe" />
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">
-          Cancel
-        </el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
-          Confirm
-        </el-button>
+        定制
       </div>
     </el-dialog>
 
@@ -119,8 +114,7 @@
 </template>
 
 <script>
-import { fetchPv, createArticle, updateArticle } from '@/api/article'
-import { pageModels, delModel } from '@/api/model'
+import { pageModels, delModel, publish } from '@/api/model'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -202,12 +196,20 @@ export default {
       this.listQuery.page = 1
       this.getList()
     },
-    handleModifyStatus(row, status) {
-      this.$message({
-        message: '操作Success',
-        type: 'success'
+    handlePublish(row) {
+      publish(row.id).then(response => {
+        let type
+        if (response.code === 200) {
+          type = 'success'
+        } else {
+          type = 'danger'
+        }
+        this.$message({
+          message: response.message,
+          type: type
+        })
+        this.getList()
       })
-      row.key = status
     },
     sortChange(data) {
       const { prop, order } = data
@@ -235,71 +237,27 @@ export default {
       }
     },
     handleCreate() {
-      window.open('http://localhost:10086/wf/model/create/110')
-      // this.resetTemp()
-      // this.dialogStatus = 'create'
-      // this.dialogFormVisible = true
-    },
-    createData() {
-      this.$refs['dataForm'].validate((valid) => {
-        if (valid) {
-          this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
-          this.temp.author = 'vue-element-admin'
-          createArticle(this.temp).then(() => {
-            this.list.unshift(this.temp)
-            this.dialogFormVisible = false
-            this.$notify({
-              title: 'Success',
-              message: 'Created Successfully',
-              type: 'success',
-              duration: 2000
-            })
-          })
-        }
-      })
+      window.location.href = process.env.VUE_APP_BASE_API + '/wf/model/create/110'
     },
     handleUpdate(row) {
-      this.temp = Object.assign({}, row) // copy obj
-      this.temp.timestamp = new Date(this.temp.timestamp)
-      this.dialogStatus = 'update'
-      this.dialogFormVisible = true
-    },
-    updateData() {
-      this.$refs['dataForm'].validate((valid) => {
-        if (valid) {
-          const tempData = Object.assign({}, this.temp)
-          tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
-          updateArticle(tempData).then(() => {
-            const index = this.list.findIndex(v => v.id === this.temp.id)
-            this.list.splice(index, 1, this.temp)
-            this.dialogFormVisible = false
-            this.$notify({
-              title: 'Success',
-              message: 'Update Successfully',
-              type: 'success',
-              duration: 2000
-            })
-          })
-        }
-      })
+      window.location.href = process.env.VUE_APP_BASE_API + '/workflow/modeler.html?modelId=' + row.id
     },
     handleDelete(row) {
       delModel(row.id).then(response => {
-        if (response.code === 200) {
-          this.$notify({
-            title: 'Success',
-            message: 'Delete Successfully',
-            type: 'success',
-            duration: 2000
-          })
-        }
+        this.$notify({
+          title: 'Success',
+          message: 'Delete Successfully',
+          type: 'success',
+          duration: 2000
+        })
+        this.getList()
       })
     },
     handleFetchPv(pv) {
-      fetchPv(pv).then(response => {
-        this.pvData = response.data.pvData
-        this.dialogPvVisible = true
-      })
+      // fetchPv(pv).then(response => {
+      //   this.pvData = response.data.pvData
+      //   this.dialogPvVisible = true
+      // })
     },
     handleDownload() {
       this.downloadLoading = true
