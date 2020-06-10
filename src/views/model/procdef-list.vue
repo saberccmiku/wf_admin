@@ -95,13 +95,11 @@
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <div class="block">
-        <el-image v-for="url in urls" :key="url" :src="url" lazy>
-          <div slot="error" class="image-slot">
-            <i class="el-icon-picture-outline" />
-          </div>
-        </el-image>
-      </div>
+      <el-image v-for="url in urls" :key="url" :src="url" lazy>
+        <div slot="error" class="image-slot">
+          <i class="el-icon-picture-outline" />
+        </div>
+      </el-image>
     </el-dialog>
 
     <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
@@ -229,13 +227,10 @@ export default {
     },
     handleDisplay(row) {
       processPic(row.deploymentId).then(response => {
-        this.urls.push(response.data)
-      })
-      this.resetTemp()
-      this.dialogStatus = 'create'
-      this.dialogFormVisible = true
-      this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
+        this.urls.splice(0, this.urls.length)
+        this.urls.push('data:image/png;base64,' + response.data)
+        this.resetTemp()
+        this.dialogFormVisible = true
       })
     },
     handleDelete(row) {

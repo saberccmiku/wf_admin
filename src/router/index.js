@@ -172,7 +172,7 @@ export const asyncRoutes = [
   {
     path: '/interfaces',
     component: Layout,
-    redirect: '/interfaces/list',
+    redirect: '/interfaces/index',
     alwaysShow: true, // will always show the root menu
     name: 'interfaces',
     meta: {
@@ -182,7 +182,7 @@ export const asyncRoutes = [
     children: [
       {
         path: 'interfaces',
-        component: () => import('@/views/interface/list'),
+        component: () => import('@/views/interface/index'),
         name: 'IconsIndex',
         meta: {
           title: '接口列表',
