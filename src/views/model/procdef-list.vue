@@ -34,6 +34,11 @@
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
+      <el-table-column label="KEY" width="150px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.processDefinitionKey }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="名称" width="150px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.name }}</span>

@@ -42,9 +42,9 @@
           <span>{{ row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="更新日期" width="150px" align="center">
+      <el-table-column label="更新日期" width="230px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.createTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+          <span>{{ row.createTime }}</span>
         </template>
       </el-table-column>
       <el-table-column label="描述" min-width="150px">
