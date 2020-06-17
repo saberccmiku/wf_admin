@@ -157,6 +157,12 @@ export default {
       add(this.temp).then(response => {
         this.loading = false
         this.dialogFormVisible = false
+        this.$notify({
+          title: '成功',
+          message: response.message,
+          type: 'success',
+          duration: 2000
+        })
       }).catch(() => {
         this.loading = false
       })

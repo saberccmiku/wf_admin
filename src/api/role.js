@@ -1,38 +1,27 @@
 import request from '@/utils/request'
 
-export function getRoutes() {
+// 角色列表
+export function roleList(data) {
   return request({
-    url: '/vue-element-admin/routes',
-    method: 'get'
+    url: '/wf/actTenantRoles/roleList',
+    method: 'get',
+    params: data
   })
 }
 
-export function getRoles() {
+// 角色新增
+export function insertRole(data) {
   return request({
-    url: '/vue-element-admin/roles',
-    method: 'get'
-  })
-}
-
-export function addRole(data) {
-  return request({
-    url: '/vue-element-admin/role',
+    url: '/wf/actTenantRoles/insert',
     method: 'post',
     data
   })
 }
-
-export function updateRole(id, data) {
+// 租户新增
+export function insertTenant(data) {
   return request({
-    url: `/vue-element-admin/role/${id}`,
-    method: 'put',
+    url: '/wf/actTenants/insert',
+    method: 'post',
     data
-  })
-}
-
-export function deleteRole(id) {
-  return request({
-    url: `/vue-element-admin/role/${id}`,
-    method: 'delete'
   })
 }
