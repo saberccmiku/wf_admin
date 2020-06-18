@@ -120,7 +120,7 @@
 </template>
 
 <script>
-import { pageProcessDefinitions, processPic } from '@/api/model'
+import { pageProcessDefinitions, processPicByProcessDefinitionId } from '@/api/model'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -231,7 +231,7 @@ export default {
       }
     },
     handleDisplay(row) {
-      processPic(row.deploymentId).then(response => {
+      processPicByProcessDefinitionId(row.id).then(response => {
         this.urls.splice(0, this.urls.length)
         this.urls.push('data:image/png;base64,' + response.data)
         this.resetTemp()

@@ -32,9 +32,9 @@ export function pageProcessDefinitions(data) {
   })
 }
 
-export function processPic(deploymentId) {
+export function processPicByProcessDefinitionId(processDefinitionId) {
   return request({
-    url: '/wf/model/processPic/' + deploymentId,
+    url: '/wf/model/processPicByProcessDefinitionId/' + processDefinitionId,
     method: 'get'
   })
 }

@@ -39,72 +39,77 @@
           <span>{{ row.businessKey }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="更新日期" width="150px" align="center">
+      <el-table-column label="开始时间" width="150px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.startTime }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="处理类型" min-width="150px" align="center">
+      <el-table-column label="结束时间" min-width="150px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.handleType }}</span>
+          <span>{{ row.endTime }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="参数JSON" width="140px" align="center">
+      <el-table-column label="持续时间" width="140px" align="center">
         <template slot-scope="{row}">
-          <span class="link">{{ row.args }}</span>
+          <span class="link">{{ row.durationInMillis }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="响应JSON" width="140px" align="center">
+      <el-table-column label="定义key" width="140px" align="center">
         <template slot-scope="{row}">
-          {{ row.response }}
+          {{ row.processDefinitionKey }}
         </template>
       </el-table-column>
-      <el-table-column label="服务类型" align="center" width="95">
+      <el-table-column label="租户ID" align="center" width="95">
         <template slot-scope="{row}">
-          {{ row.serviceType }}
+          {{ row.tenantId }}
         </template>
       </el-table-column>
-      <el-table-column label="创建时间" class-name="status-col" width="100">
+      <el-table-column label="状态" align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
-          <span>{{ row.createTime }}</span>
+          <el-tag v-if="row.endTime===null||row.endTime===''" type="success">
+            运行中
+          </el-tag>
+          <el-tag v-if="row.endTime!=null&&row.endTime!=''" type="info">
+            已结束
+          </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="修改时间" align="center" width="230" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
-          <span>{{ row.updateTime }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="描述" align="center" width="230" class-name="small-padding fixed-width">
-        <template slot-scope="{row}">
-          <span>{{ row.des }}</span>
+          <el-button type="primary" size="mini" @click="handleActivity(row)">
+            活动
+          </el-button>
+          <el-button size="mini" type="success" @click="handleForm(row)">
+            表单
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
 
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
 
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+    <el-dialog title="活动实例" :visible.sync="activityFormVisible">
       <el-image v-for="url in urls" :key="url" :src="url" lazy>
         <div slot="error" class="image-slot">
           <i class="el-icon-picture-outline" />
         </div>
       </el-image>
-    </el-dialog>
-
-    <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
-      <el-table :data="pvData" border fit highlight-current-row style="width: 100%">
-        <el-table-column prop="key" label="Channel" />
-        <el-table-column prop="pv" label="Pv" />
-      </el-table>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="dialogPvVisible = false">Confirm</el-button>
-      </span>
+      <div class="block">
+        <el-timeline>
+          <el-timeline-item v-for="activity in activityList" :key="activity" :timestamp="activity.endTime" placement="top">
+            <el-card>
+              <h4>{{ activity.activityName }}审批</h4>
+              <p>{{ activity.assignee==null||''?"无名氏": activity.assignee }} 提交于 2018/4/12 20:46</p>
+            </el-card>
+          </el-timeline-item>
+        </el-timeline>
+      </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { pageList } from '@/api/processInstance'
+import { pageList, processDiagramPic, activityList } from '@/api/processInstance'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -127,6 +132,7 @@ export default {
     return {
       tableKey: 0,
       list: null,
+      activityList: null,
       total: 0,
       listLoading: true,
       listQuery: {
@@ -140,31 +146,8 @@ export default {
       urls: [],
       calendarTypeOptions: [{ key: 1, display_name: '请假' }, { key: 2, display_name: '用车' }, { key: 3, display_name: '政务' }],
       importanceOptions: [1, 2, 3],
-      sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
-      statusOptions: ['published', 'draft', 'deleted'],
       showReviewer: false,
-      temp: {
-        id: undefined,
-        importance: 1,
-        remark: '',
-        timestamp: new Date(),
-        title: '',
-        type: '',
-        status: 'published'
-      },
-      dialogFormVisible: false,
-      dialogStatus: '',
-      textMap: {
-        update: 'Edit',
-        create: 'Create'
-      },
-      dialogPvVisible: false,
-      pvData: [],
-      rules: {
-        type: [{ required: true, message: 'type is required', trigger: 'change' }],
-        timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
-        title: [{ required: true, message: 'title is required', trigger: 'blur' }]
-      },
+      activityFormVisible: false,
       downloadLoading: false
     }
   },
@@ -203,27 +186,6 @@ export default {
       }
       this.handleFilter()
     },
-    resetTemp() {
-      this.temp = {
-        id: undefined,
-        importance: 1,
-        remark: '',
-        timestamp: new Date(),
-        title: '',
-        status: 'published',
-        type: ''
-      }
-    },
-    handleDisplay(row) {
-    },
-    handleDelete(row) {
-    },
-    handleFetchPv(pv) {
-      // fetchPv(pv).then(response => {
-      //   this.pvData = response.data.pvData
-      //   this.dialogPvVisible = true
-      // })
-    },
     handleDownload() {
       this.downloadLoading = true
       import('@/vendor/Export2Excel').then(excel => {
@@ -250,6 +212,23 @@ export default {
     getSortClass: function(key) {
       const sort = this.listQuery.sort
       return sort === `+${key}` ? 'ascending' : 'descending'
+    },
+    handleForm() {
+      this.$message({
+        message: '抱歉，表单功能还未开启',
+        type: 'warning'
+      })
+    },
+    handleActivity(row) {
+      processDiagramPic(row.id).then(response => {
+        this.urls.splice(0, this.urls.length)
+        this.urls.push('data:image/png;base64,' + response.data)
+        this.dialogStatus = 'create'
+        this.activityFormVisible = true
+        activityList(row.id).then(response => {
+          this.activityList = response.data
+        })
+      })
     }
   }
 }

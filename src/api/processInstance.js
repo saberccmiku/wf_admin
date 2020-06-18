@@ -8,3 +8,18 @@ export function pageList(data) {
     params: data
   })
 }
+// 高亮流程图
+export function processDiagramPic(processInstanceId) {
+  return request({
+    url: '/wf/model/processDiagramPic/' + processInstanceId,
+    method: 'get'
+  })
+}
+// 节点活动信息
+export function activityList(processInstanceId) {
+  return request({
+    url: '/wf/processInstance/activityList/' + processInstanceId,
+    method: 'get'
+  })
+}
+

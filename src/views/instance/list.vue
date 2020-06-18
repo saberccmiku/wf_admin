@@ -1,13 +1,8 @@
 <template>
   <div class="tab-container">
-    <el-tag>工作流平台常用接口</el-tag>
-    <el-tag type="success">业务系统对接</el-tag>
-    <el-tag type="warning">第三方框架植入</el-tag>
-    <div>
-      <el-button class="filter-item" style="margin-left: 10px;margin-top: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
-        新建
-      </el-button>
-    </div>
+    <el-tag>业务表单</el-tag>
+    <el-tag type="success">流程动向</el-tag>
+    <el-tag type="warning">活动管理</el-tag>
     <el-tabs v-model="activeName" style="margin-top:15px;" type="border-card">
       <el-tab-pane v-for="item in tabMapOptions" :key="item.key" :label="item.label" :name="item.key">
         <keep-alive>
