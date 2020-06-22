@@ -47,7 +47,7 @@
           <span>{{ row.createTime }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="描述" min-width="150px">
+      <el-table-column label="描述" min-width="90px">
         <template slot-scope="{row}">
           <span>{{ row.metaInfo }}</span>
         </template>
@@ -74,9 +74,14 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="230" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="300" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
-          <el-button type="primary" size="mini" @click="handleUpdate(row)">
+          <router-link :to="'/model/processConfig/'+row.id">
+            <el-button type="primary" size="small">
+              配置
+            </el-button>
+          </router-link>
+          <el-button type="warning" size="mini" @click="handleUpdate(row)">
             编辑
           </el-button>
           <el-button v-if="row.key=='草稿'" size="mini" type="success" @click="handlePublish(row)">

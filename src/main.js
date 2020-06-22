@@ -20,6 +20,9 @@ import './utils/error-log' // error log
 
 import * as filters from './filters' // global filters
 
+import 'bpmn-js/dist/assets/diagram-js.css' // vue项目中的用到流程图bpmn
+import 'bpmn-js/dist/assets/bpmn-font/css/bpmn-embedded.css' // vue项目中的用到流程图bpmn
+
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api

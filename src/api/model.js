@@ -39,3 +39,10 @@ export function processPicByProcessDefinitionId(processDefinitionId) {
   })
 }
 
+// 获取模型xml
+export function exportModelXml(modelId) {
+  return request({
+    url: '/wf/model//exportModelXml/' + modelId,
+    method: 'get'
+  })
+}
