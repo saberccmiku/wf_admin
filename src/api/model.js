@@ -46,3 +46,12 @@ export function exportModelXml(modelId) {
     method: 'get'
   })
 }
+
+// 获取联级选择器的角色信息
+export function roleListForCascadeSelector() {
+  return request({
+    url: '/wf/actTenantRoles/roleListForCascadeSelector',
+    method: 'get'
+  })
+}
+

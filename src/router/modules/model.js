@@ -34,7 +34,7 @@ const modelRouter = {
       path: 'processConfig/:id(\\d+)',
       component: () => import('@/views/model/processConfig'),
       name: 'processConfig',
-      meta: { title: '流程配置', icon: 'tree-table' }
+      meta: { title: '流程配置', icon: 'tree-table', hidden: true }
     }
   ]
 }

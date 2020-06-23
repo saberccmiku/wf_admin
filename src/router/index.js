@@ -80,8 +80,7 @@ export const constantRoutes = [
         meta: { title: '主页', icon: 'dashboard', affix: true }
       }
     ]
-  },
-  modelRouter
+  }
 ]
 
 /**
@@ -89,6 +88,7 @@ export const constantRoutes = [
  * the routes that need to be dynamically loaded based on user roles
  */
 export const asyncRoutes = [
+  modelRouter,
   {
     path: '/permission',
     component: Layout,
