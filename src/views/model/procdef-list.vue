@@ -34,9 +34,14 @@
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="KEY" width="150px" align="center">
+      <el-table-column label="定义KEY" width="150px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.processDefinitionKey }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="部署ID" width="150px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.deploymentId }}</span>
         </template>
       </el-table-column>
       <el-table-column label="名称" width="150px" align="center">
@@ -51,7 +56,7 @@
       </el-table-column>
       <el-table-column label="描述" min-width="150px">
         <template slot-scope="{row}">
-          <span>{{ row.metaInfo }}</span>
+          <span>{{ row.description }}</span>
         </template>
       </el-table-column>
       <el-table-column label="版本" width="110px" align="center">

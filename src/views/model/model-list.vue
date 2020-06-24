@@ -1,17 +1,17 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input v-model="listQuery.title" placeholder="名称" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
-      <el-select v-model="listQuery.importance" placeholder="租户" clearable style="width: 90px" class="filter-item">
-        <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item" />
+      <el-input v-model="listQuery.name" placeholder="名称" style="width: 200px;" class="filter-item" @keyup.enter.native="getList" />
+      <el-select v-model="listQuery.tenantId" placeholder="租户" clearable style="width: 120px" class="filter-item">
+        <el-option v-for="item in tenants" :key="item.id" :label="item.name" :value="item.tenantId" />
       </el-select>
-      <el-select v-model="listQuery.type" placeholder="类型" clearable class="filter-item" style="width: 130px">
-        <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name+'('+item.key+')'" :value="item.key" />
+      <el-select v-model="listQuery.category" placeholder="类型" clearable class="filter-item" style="width: 130px">
+        <el-option v-for="item in categories" :key="item" :label="item" :value="item" />
       </el-select>
-      <el-select v-model="listQuery.type" placeholder="状态" clearable class="filter-item" style="width: 130px">
-        <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name+'('+item.key+')'" :value="item.key" />
+      <el-select v-model="listQuery.status" placeholder="状态" clearable class="filter-item" style="width: 130px">
+        <el-option v-for="item in modelStatusArr" :key="item" :label="item" :value="item" />
       </el-select>
-      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
+      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="getList">
         搜索
       </el-button>
       <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
@@ -30,11 +30,15 @@
       fit
       highlight-current-row
       style="width: 100%;"
-      @sort-change="sortChange"
     >
-      <el-table-column label="ID" prop="id" sortable="custom" align="center" width="80" :class-name="getSortClass('id')">
+      <el-table-column label="ID" prop="id" sortable="custom" align="center" width="80">
         <template slot-scope="{row}">
           <span>{{ row.id }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="模型KEY" width="150px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.modelKey }}</span>
         </template>
       </el-table-column>
       <el-table-column label="名称" width="150px" align="center">
@@ -69,8 +73,8 @@
       </el-table-column>
       <el-table-column label="状态" class-name="status-col" width="100">
         <template slot-scope="{row}">
-          <el-tag :type="row.key | statusFilter">
-            {{ row.key }}
+          <el-tag :type="row.status | statusFilter">
+            {{ modelStatusArr[row.status] }}
           </el-tag>
         </template>
       </el-table-column>
@@ -84,10 +88,10 @@
           <el-button type="warning" size="mini" @click="handleUpdate(row)">
             编辑
           </el-button>
-          <el-button v-if="row.key=='草稿'" size="mini" type="success" @click="handlePublish(row)">
+          <el-button v-if="row.status===0" size="mini" type="success" @click="handlePublish(row)">
             发布
           </el-button>
-          <el-button v-if="row.key!=='草稿'" size="mini" @click="handlePublish(row)">
+          <el-button v-if="row.status!==0" size="mini" @click="handlePublish(row)">
             停止
           </el-button>
           <el-button size="mini" type="danger" @click="handleDelete(row)">
@@ -103,6 +107,7 @@
 
 <script>
 import { pageModels, delModel, publish } from '@/api/model'
+import { getTenantList } from '@/api/tenant'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -114,9 +119,9 @@ export default {
   filters: {
     statusFilter(status) {
       const statusMap = {
-        '已发布': 'warning',
-        '草稿': 'info',
-        '运行中': 'success'
+        1: 'warning',
+        0: 'info',
+        2: 'success'
       }
       return statusMap[status]
     }
@@ -130,13 +135,17 @@ export default {
       listQuery: {
         current: 1,
         size: 20,
-        importance: undefined,
-        title: undefined,
-        type: undefined,
-        sort: '+id'
+        orderItems: [{ column: 'ID_', asc: true }],
+        data: {
+          tenantId: '',
+          name: '',
+          category: '',
+          status: ''
+        }
       },
-      calendarTypeOptions: [{ key: 1, display_name: '请假' }, { key: 2, display_name: '用车' }, { key: 3, display_name: '政务' }],
-      importanceOptions: [1, 2, 3],
+      categories: [],
+      tenants: [],
+      modelStatusArr: { 0: '草稿', 1: '已发布', 2: '运行中' },
       sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
       statusOptions: ['published', 'draft', 'deleted'],
       showReviewer: false,
@@ -144,6 +153,7 @@ export default {
     }
   },
   created() {
+    this.getTenantList()
     this.getList()
   },
   methods: {
@@ -152,15 +162,13 @@ export default {
       pageModels(this.listQuery).then(response => {
         this.list = response.data.records
         this.total = response.data.total
-        // Just to simulate the time of the request
-        setTimeout(() => {
-          this.listLoading = false
-        }, 1.5 * 1000)
+        this.listLoading = false
       })
     },
-    handleFilter() {
-      this.listQuery.page = 1
-      this.getList()
+    getTenantList() {
+      getTenantList().then(response => {
+        this.tenants = response.data
+      })
     },
     handlePublish(row) {
       publish(row.id).then(response => {
@@ -177,36 +185,11 @@ export default {
         this.getList()
       })
     },
-    sortChange(data) {
-      const { prop, order } = data
-      if (prop === 'id') {
-        this.sortByID(order)
-      }
-    },
-    sortByID(order) {
-      if (order === 'ascending') {
-        this.listQuery.sort = '+id'
-      } else {
-        this.listQuery.sort = '-id'
-      }
-      this.handleFilter()
-    },
     handleCreate() {
       window.location.href = process.env.VUE_APP_BASE_API + '/wf/model/create/110'
     },
     handleUpdate(row) {
       window.location.href = process.env.VUE_APP_BASE_API + '/workflow/modeler.html?modelId=' + row.id
-    },
-    handleDelete(row) {
-      delModel(row.id).then(response => {
-        this.$notify({
-          title: 'Success',
-          message: 'Delete Successfully',
-          type: 'success',
-          duration: 2000
-        })
-        this.getList()
-      })
     },
     handleFetchPv(pv) {
       // fetchPv(pv).then(response => {
@@ -217,8 +200,8 @@ export default {
     handleDownload() {
       this.downloadLoading = true
       import('@/vendor/Export2Excel').then(excel => {
-        const tHeader = ['timestamp', 'title', 'type', 'importance', 'status']
-        const filterVal = ['timestamp', 'title', 'type', 'importance', 'status']
+        const tHeader = ['timestamp', 'title', 'type', 'tenant', 'status']
+        const filterVal = ['timestamp', 'title', 'type', 'tenant', 'status']
         const data = this.formatJson(filterVal)
         excel.export_json_to_excel({
           header: tHeader,
@@ -237,9 +220,29 @@ export default {
         }
       }))
     },
-    getSortClass: function(key) {
-      const sort = this.listQuery.sort
-      return sort === `+${key}` ? 'ascending' : 'descending'
+    handleDelete(row) {
+      if (row.status === 2) {
+        this.$message({
+          message: '警告，该模型有正在运行的任务，不能删除',
+          type: 'warning'
+        })
+        return
+      }
+      this.$confirm('此操作将永久删除该数据, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        delModel(row.id).then(response => {
+          this.$notify({
+            title: 'Success',
+            message: 'Delete Successfully',
+            type: 'success',
+            duration: 2000
+          })
+          this.getList()
+        })
+      })
     }
   }
 }

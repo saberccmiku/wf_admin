@@ -110,7 +110,7 @@ export default {
               // 此时想要点击节点后，拿到节点实例，通过外部输入更新节点名称
               this.currentElement = element
               this.drawer = true
-              this.splitBusiness2Json(this.businessObject)
+              this.splitBusiness2Json(element.businessObject)
               // 处理联级选择器初选值
               var roleId = this.form['activiti:candidateGroups']
               for (var i = 0; i < this.options.length; i++) {
