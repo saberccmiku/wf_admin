@@ -35,9 +35,9 @@
 <script>
 import BpmnModeler from 'bpmn-js/lib/Modeler'
 import camundaExtension from '../../resources/stencilset.json'
-import { exportModelXml, roleListForCascadeSelector } from '@/api/model'
+import { exportModelXml, roleListForCascadeSelector, saveModel } from '@/api/model'
+import customTranslate from '../../resources/customTranslate/customTranslate'
 // import {tempDetail, saveCanvas} from '@api/processConfig';
-
 export default {
   name: 'Index',
   data() {
@@ -51,13 +51,18 @@ export default {
       defaultRole: [],
       defaultRoleLable: '',
       options: [],
-      form: {}
+      form: {},
+      reqModel: {}
     }
   },
   mounted() {
+    var customTranslateModule = {
+      translate: ['value', customTranslate]
+    }
     this.containerEl = document.getElementById('container')
     this.bpmnModeler = new BpmnModeler({
       container: this.containerEl,
+      additionalModules: [customTranslateModule],
       moddleExtensions: { camunda: camundaExtension }
     })
   },
@@ -112,7 +117,9 @@ export default {
               this.drawer = true
               this.splitBusiness2Json(element.businessObject)
               // 处理联级选择器初选值
-              var roleId = this.form['activiti:candidateGroups']
+              this.defaultRole = []
+              this.defaultRoleLable = ''
+              var roleId = this.form['candidateGroups']
               for (var i = 0; i < this.options.length; i++) {
                 var childrens = this.options[i].children
                 for (var j = 0; j < childrens.length; j++) {
@@ -132,13 +139,19 @@ export default {
       })
     },
     splitBusiness2Json(businessObject) {
-      const formData = {}
       const baseArrs = Object.entries(businessObject)
       for (let i = 0; i < baseArrs.length; i++) {
-        formData[baseArrs[i][0]] = baseArrs[i][1]
+        this.form[baseArrs[i][0]] = baseArrs[i][1]
       }
-      formData['candidateGroups'] = businessObject.$attrs['activiti:candidateGroups']
-      this.form = formData
+      this.form['candidateGroups'] = businessObject.$attrs['activiti:candidateGroups']
+      this.form['modelId'] = this.$route.params.id
+      this.reqModel = {
+        modelId: this.$route.params.id,
+        name: this.form.name,
+        jsonXml: JSON.stringify(this.form),
+        svgXml: this.chart,
+        description: '测试'
+      }
     },
     exportModelXml() {
       exportModelXml(this.$route.params.id).then(response => {
@@ -152,7 +165,14 @@ export default {
       })
     },
     onSubmit() {
-      console.log('submit!')
+      this.form.candidateGroups = this.defaultRole[1]
+      saveModel(this.form).then(response => {
+        this.exportModelXml()
+        this.$message({
+          message: response.message,
+          type: 'success'
+        })
+      })
     },
     handleChange(value) {
       console.log(value)

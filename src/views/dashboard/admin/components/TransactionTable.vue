@@ -2,12 +2,22 @@
   <el-table :data="list" style="width: 100%;padding-top: 15px;">
     <el-table-column label="活动实例" min-width="200">
       <template slot-scope="scope">
-        {{ scope.row.order_no | orderNoFilter }}
+        {{ scope.row.id }}
+      </template>
+    </el-table-column>
+    <el-table-column label="业务ID" min-width="200">
+      <template slot-scope="scope">
+        {{ scope.row.businessKey }}
+      </template>
+    </el-table-column>
+    <el-table-column label="启动节点" min-width="200">
+      <template slot-scope="scope">
+        {{ scope.row.startActivityId }}
       </template>
     </el-table-column>
     <el-table-column label="创建时间" width="195" align="center">
       <template slot-scope="scope">
-        {{ scope.row.price | toThousandFilter }}
+        {{ scope.row.startTime }}
       </template>
     </el-table-column>
     <el-table-column label="状态" width="100" align="center">
@@ -21,7 +31,7 @@
 </template>
 
 <script>
-import { transactionList } from '@/api/remote-search'
+import { pageList } from '@/api/processInstance'
 
 export default {
   filters: {
@@ -31,14 +41,16 @@ export default {
         pending: 'danger'
       }
       return statusMap[status]
-    },
-    orderNoFilter(str) {
-      return str.substring(0, 30)
     }
   },
   data() {
     return {
-      list: null
+      list: null,
+      listQuery: {
+        current: 1,
+        size: 10,
+        tenantId: 110
+      }
     }
   },
   created() {
@@ -46,8 +58,8 @@ export default {
   },
   methods: {
     fetchData() {
-      transactionList().then(response => {
-        this.list = response.data.items.slice(0, 8)
+      pageList(this.listQuery).then(response => {
+        this.list = response.data.records
       })
     }
   }
