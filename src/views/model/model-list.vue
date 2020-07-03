@@ -48,7 +48,7 @@
       </el-table-column>
       <el-table-column label="更新日期" width="230px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.createTime }}</span>
+          <span>{{ parseTime(new Date(row.createTime)) }}</span>
         </template>
       </el-table-column>
       <el-table-column label="描述" min-width="90px">
@@ -210,6 +210,9 @@ export default {
         })
         this.downloadLoading = false
       })
+    },
+    parseTime(date) {
+      return parseTime(date)
     },
     formatJson(filterVal) {
       return this.list.map(v => filterVal.map(j => {

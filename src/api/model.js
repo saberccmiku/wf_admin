@@ -39,6 +39,13 @@ export function processPicByProcessDefinitionId(processDefinitionId) {
   })
 }
 
+export function delProcessDefinition(deploymentId) {
+  return request({
+    url: '/wf/model/delProcessDefinition/deploymentId/' + deploymentId,
+    method: 'delete'
+  })
+}
+
 // 获取模型xml
 export function exportModelXml(modelId) {
   return request({

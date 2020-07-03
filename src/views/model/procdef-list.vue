@@ -125,7 +125,7 @@
 </template>
 
 <script>
-import { pageProcessDefinitions, processPicByProcessDefinitionId } from '@/api/model'
+import { pageProcessDefinitions, processPicByProcessDefinitionId, delProcessDefinition } from '@/api/model'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -244,6 +244,28 @@ export default {
       })
     },
     handleDelete(row) {
+      if (row.hasTask === 1) {
+        this.$message({
+          message: '警告，该定义有正在运行的任务，不能删除',
+          type: 'warning'
+        })
+        return
+      }
+      this.$confirm('此操作将永久删除该数据, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        delProcessDefinition(row.deploymentId).then(response => {
+          this.$notify({
+            title: 'Success',
+            message: 'Delete Successfully',
+            type: 'success',
+            duration: 2000
+          })
+          this.getList()
+        })
+      })
     },
     handleFetchPv(pv) {
       // fetchPv(pv).then(response => {

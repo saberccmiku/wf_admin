@@ -57,14 +57,31 @@
 
 <script>
 import CountTo from 'vue-count-to'
-
+import { selectPanelGroup } from '@/api/dashboard'
 export default {
   components: {
     CountTo
   },
+  data() {
+    return {
+      panelGroup: []
+    }
+  },
+  created() {
+    this.selectPanelGroup()
+  },
   methods: {
     handleSetLineChartData(type) {
       this.$emit('handleSetLineChartData', type)
+    },
+    selectPanelGroup() {
+      selectPanelGroup().then(response => {
+        const arr = response.data
+        for (const item in arr) {
+          this.panelGroup[item.type] = item.total
+        }
+        console.log(this.panelGroup)
+      })
     }
   }
 }

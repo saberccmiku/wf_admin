@@ -39,24 +39,24 @@
           <span>{{ row.businessKey }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="开始时间" width="150px" align="center">
+      <el-table-column label="开始时间" width="160px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.startTime }}</span>
+          <span>{{ parseTime(new Date(row.startTime)) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="结束时间" min-width="150px" align="center">
+      <el-table-column label="结束时间" min-width="160px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.endTime }}</span>
+          <span>{{ parseTime(new Date(row.endTime)) }}</span>
         </template>
       </el-table-column>
       <el-table-column label="持续时间" width="140px" align="center">
         <template slot-scope="{row}">
-          <span class="link">{{ row.durationInMillis }}</span>
+          <span class="link">{{ formatTime(row.durationInMillis) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="定义key" width="140px" align="center">
+      <el-table-column label="定义名称" width="140px" align="center">
         <template slot-scope="{row}">
-          {{ row.processDefinitionKey }}
+          {{ row.processDefinitionName }}
         </template>
       </el-table-column>
       <el-table-column label="租户ID" align="center" width="95">
@@ -82,6 +82,9 @@
           <el-button size="mini" type="success" @click="handleForm(row)">
             表单
           </el-button>
+          <el-button size="mini" type="danger" @click="handleDelete(row)">
+            删除
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -96,10 +99,11 @@
       </el-image>
       <div class="block">
         <el-timeline>
-          <el-timeline-item v-for="activity in activityList" :key="activity" :timestamp="activity.endTime" placement="top">
+          <el-timeline-item v-for="activity in activityList" :key="activity" :timestamp="activity.startTime" placement="top">
             <el-card>
-              <h4>{{ activity.activityName }}审批</h4>
-              <p>{{ activity.assignee==null||''?"无名氏": activity.assignee }} 提交于 2018/4/12 20:46</p>
+              <h4>{{ activity.actName }}审批</h4>
+              <p>{{ activity.assigneeName==null||''?"无名氏": activity.assigneeName }} {{ activity.endTime==null||''?"正在审批":"提交于"+activity.endTime }}</p>
+              <p v-show="activity.comment!=null">意见：{{ activity.comment }}</p>
             </el-card>
           </el-timeline-item>
         </el-timeline>
@@ -109,9 +113,9 @@
 </template>
 
 <script>
-import { pageList, processDiagramPic, activityList } from '@/api/processInstance'
+import { pageList, processDiagramPic, activityList, deleteProcessInstance } from '@/api/processInstance'
 import waves from '@/directive/waves' // waves directive
-import { parseTime } from '@/utils'
+import { parseTime, formatTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 
 export default {
@@ -200,6 +204,12 @@ export default {
         this.downloadLoading = false
       })
     },
+    parseTime(date) {
+      return parseTime(date)
+    },
+    formatTime(date) {
+      return formatTime(date)
+    },
     formatJson(filterVal) {
       return this.list.map(v => filterVal.map(j => {
         if (j === 'timestamp') {
@@ -227,6 +237,23 @@ export default {
         this.activityFormVisible = true
         activityList(row.id).then(response => {
           this.activityList = response.data
+        })
+      })
+    },
+    handleDelete(row) {
+      this.$confirm('此操作将删除该数据, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        deleteProcessInstance(row.id).then(response => {
+          this.$notify({
+            title: 'Success',
+            message: '删除成功',
+            type: 'success',
+            duration: 2000
+          })
+          this.getList()
         })
       })
     }

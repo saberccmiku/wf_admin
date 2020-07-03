@@ -23,3 +23,11 @@ export function activityList(processInstanceId) {
   })
 }
 
+// 节点活动信息
+export function deleteProcessInstance(processInstanceId) {
+  return request({
+    url: '/wf/processInstance/deleteProcessInstance/' + processInstanceId,
+    method: 'delete'
+  })
+}
+
