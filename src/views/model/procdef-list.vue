@@ -86,9 +86,11 @@
       </el-table-column>
       <el-table-column label="操作" align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
-          <el-button type="primary" size="mini" @click="handleDisplay(row)">
-            预览
-          </el-button>
+          <router-link :to="'/model/prodefConfig/'+row.id">
+            <el-button type="primary" size="small">
+              预览
+            </el-button>
+          </router-link>
           <el-button v-if="row.key=='草稿'" size="mini" type="success" @click="handlePublish(row)">
             发布
           </el-button>
@@ -125,7 +127,7 @@
 </template>
 
 <script>
-import { pageProcessDefinitions, processPicByProcessDefinitionId, delProcessDefinition } from '@/api/model'
+import { pageProcessDefinitions, delProcessDefinition } from '@/api/model'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -208,8 +210,6 @@ export default {
       this.listQuery.page = 1
       this.getList()
     },
-    handlePublish(row) {
-    },
     sortChange(data) {
       const { prop, order } = data
       if (prop === 'id') {
@@ -234,14 +234,6 @@ export default {
         status: 'published',
         type: ''
       }
-    },
-    handleDisplay(row) {
-      processPicByProcessDefinitionId(row.id).then(response => {
-        this.urls.splice(0, this.urls.length)
-        this.urls.push('data:image/png;base64,' + response.data)
-        this.resetTemp()
-        this.dialogFormVisible = true
-      })
     },
     handleDelete(row) {
       if (row.hasTask === 1) {

@@ -47,9 +47,17 @@ export function delProcessDefinition(deploymentId) {
 }
 
 // 获取模型xml
-export function exportModelXml(modelId) {
+export function exportProcessXmlByModelId(modelId) {
   return request({
-    url: '/wf/model/exportModelXml/' + modelId,
+    url: '/wf/model/exportProcessXmlByModelId/' + modelId,
+    method: 'get'
+  })
+}
+
+// 获取模型xml
+export function exportProcessXmlByProcessDefinitionId(modelId) {
+  return request({
+    url: '/wf/model/exportProcessXmlByProcessDefinitionId/' + modelId,
     method: 'get'
   })
 }

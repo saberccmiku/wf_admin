@@ -11,22 +11,18 @@
         </el-form-item>
         <el-form-item label="执行角色">
           <el-popover placement="top-start" width="200" trigger="hover" :content="defaultRoleLable">
-            <el-cascader slot="reference" v-model="defaultRole" :options="options" :props="{ expandTrigger: 'hover' }" @change="handleChange" />
+            <el-cascader slot="reference" v-model="defaultRole" :options="options" :props="{ expandTrigger: 'hover' }" :disabled="true" @change="handleChange" />
           </el-popover>
         </el-form-item>
         <el-form-item label="周期限制">
-          <el-radio-group v-model="form.resource">
+          <el-radio-group v-model="form.resource" :disabled="true">
             <el-radio label="当天" />
             <el-radio label="两天" />
             <el-radio label="三天" />
           </el-radio-group>
         </el-form-item>
         <el-form-item label="备注说明">
-          <el-input v-model="form.desc" type="textarea" />
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="onSubmit">保存</el-button>
-          <el-button @click="drawer=false">取消</el-button>
+          <el-input v-model="form.desc" type="textarea" :disabled="true" />
         </el-form-item>
       </el-form>
     </el-drawer>
@@ -35,7 +31,7 @@
 <script>
 import BpmnModeler from 'bpmn-js/lib/Modeler'
 import camundaExtension from '../../resources/stencilset.json'
-import { exportProcessXmlByModelId, roleListForCascadeSelector, saveModel } from '@/api/model'
+import { exportProcessXmlByProcessDefinitionId, roleListForCascadeSelector } from '@/api/model'
 import customTranslate from '../../resources/customTranslate/customTranslate'
 // import {tempDetail, saveCanvas} from '@api/processConfig';
 export default {
@@ -67,7 +63,7 @@ export default {
     })
   },
   created() {
-    this.exportProcessXmlByModelId()
+    this.exportProcessXmlByProcessDefinitionId()
     this.roleListForCascadeSelector()
   },
   methods: {
@@ -153,8 +149,8 @@ export default {
         description: '测试'
       }
     },
-    exportProcessXmlByModelId() {
-      exportProcessXmlByModelId(this.$route.params.id).then(response => {
+    exportProcessXmlByProcessDefinitionId() {
+      exportProcessXmlByProcessDefinitionId(this.$route.params.id).then(response => {
         this.chart = response.data
         this.showChart()
       })
@@ -162,16 +158,6 @@ export default {
     roleListForCascadeSelector() {
       roleListForCascadeSelector().then(response => {
         this.options = response.data
-      })
-    },
-    onSubmit() {
-      this.form.candidateGroups = this.defaultRole[1]
-      saveModel(this.form).then(response => {
-        this.exportProcessXmlByModelId()
-        this.$message({
-          message: response.message,
-          type: 'success'
-        })
       })
     },
     handleChange(value) {

@@ -46,12 +46,12 @@
       </el-table-column>
       <el-table-column label="结束时间" min-width="160px" align="center">
         <template slot-scope="{row}">
-          <span>{{ parseTime(new Date(row.endTime)) }}</span>
+          <span>{{ row.endTime?parseTime(new Date(row.endTime)):"" }}</span>
         </template>
       </el-table-column>
       <el-table-column label="持续时间" width="140px" align="center">
         <template slot-scope="{row}">
-          <span class="link">{{ formatTime(row.durationInMillis) }}</span>
+          <span class="link">{{ row.durationInMillis?formatTime(row.durationInMillis):"" }}</span>
         </template>
       </el-table-column>
       <el-table-column label="定义名称" width="140px" align="center">
@@ -99,10 +99,10 @@
       </el-image>
       <div class="block">
         <el-timeline>
-          <el-timeline-item v-for="activity in activityList" :key="activity" :timestamp="activity.startTime" placement="top">
+          <el-timeline-item v-for="activity in activityList" :key="activity" :timestamp="parseTime(new Date(activity.startTime))" placement="top">
             <el-card>
               <h4>{{ activity.actName }}审批</h4>
-              <p>{{ activity.assigneeName==null||''?"无名氏": activity.assigneeName }} {{ activity.endTime==null||''?"正在审批":"提交于"+activity.endTime }}</p>
+              <p>{{ activity.assigneeName==null||''?"专员": activity.assigneeName }} {{ activity.endTime==null||''?"正在审批":"提交于"+parseTime(new Date(activity.endTime)) }}</p>
               <p v-show="activity.comment!=null">意见：{{ activity.comment }}</p>
             </el-card>
           </el-timeline-item>

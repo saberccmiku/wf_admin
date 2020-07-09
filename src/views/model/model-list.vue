@@ -88,11 +88,8 @@
           <el-button type="warning" size="mini" @click="handleUpdate(row)">
             编辑
           </el-button>
-          <el-button v-if="row.status===0" size="mini" type="success" @click="handlePublish(row)">
+          <el-button size="mini" type="success" @click="handlePublish(row)">
             发布
-          </el-button>
-          <el-button v-if="row.status!==0" size="mini" @click="handlePublish(row)">
-            停止
           </el-button>
           <el-button size="mini" type="danger" @click="handleDelete(row)">
             删除
@@ -171,18 +168,21 @@ export default {
       })
     },
     handlePublish(row) {
-      publish(row.id).then(response => {
-        let type
-        if (response.code === 200) {
-          type = 'success'
-        } else {
-          type = 'danger'
-        }
-        this.$message({
-          message: response.message,
-          type: type
+      this.$confirm('此操作将新增流程版本,改变原来的业务需求, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        // this.listLoading = true
+        publish(row.id).then(response => {
+          this.$notify({
+            title: 'Success',
+            message: '发布成功',
+            type: 'success',
+            duration: 2000
+          })
+          this.getList()
         })
-        this.getList()
       })
     },
     handleCreate() {
@@ -200,8 +200,8 @@ export default {
     handleDownload() {
       this.downloadLoading = true
       import('@/vendor/Export2Excel').then(excel => {
-        const tHeader = ['timestamp', 'title', 'type', 'tenant', 'status']
-        const filterVal = ['timestamp', 'title', 'type', 'tenant', 'status']
+        const tHeader = ['ID', '模型KEY', '名称', '更新日期', '描述', '版本', '类型', '租户', '状态']
+        const filterVal = ['id', 'modelKey', 'name', 'createTime', 'metaInfo', 'version', 'category', 'tenantId', 'status']
         const data = this.formatJson(filterVal)
         excel.export_json_to_excel({
           header: tHeader,
