@@ -28,7 +28,7 @@ const modelRouter = {
       path: 'processDesign/:id(\\d+)',
       component: () => import('@/views/model/processDesign'),
       name: 'processDesign',
-      meta: { title: '流程设计', icon: 'tree-table' }
+      meta: { title: '流程设计', icon: 'edit' }
     },
     {
       path: 'processConfig/:id(\\d+)',

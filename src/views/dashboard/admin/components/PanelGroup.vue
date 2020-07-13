@@ -9,7 +9,7 @@
           <div class="card-panel-text">
             租户
           </div>
-          <count-to :start-val="0" :end-val="102400" :duration="2600" class="card-panel-num" />
+          <count-to :start-val="0" :end-val="panelGroup.totalTenant" :duration="2600" class="card-panel-num" />
         </div>
       </div>
     </el-col>
@@ -22,7 +22,7 @@
           <div class="card-panel-text">
             实例
           </div>
-          <count-to :start-val="0" :end-val="81212" :duration="3000" class="card-panel-num" />
+          <count-to :start-val="0" :end-val="panelGroup.totalProcessInstance" :duration="3000" class="card-panel-num" />
         </div>
       </div>
     </el-col>
@@ -35,7 +35,7 @@
           <div class="card-panel-text">
             待办
           </div>
-          <count-to :start-val="0" :end-val="9280" :duration="3200" class="card-panel-num" />
+          <count-to :start-val="0" :end-val="panelGroup.totalTodo" :duration="3200" class="card-panel-num" />
         </div>
       </div>
     </el-col>
@@ -48,7 +48,7 @@
           <div class="card-panel-text">
             已办
           </div>
-          <count-to :start-val="0" :end-val="13600" :duration="3600" class="card-panel-num" />
+          <count-to :start-val="0" :end-val="panelGroup.totalDone" :duration="3600" class="card-panel-num" />
         </div>
       </div>
     </el-col>
@@ -64,7 +64,7 @@ export default {
   },
   data() {
     return {
-      panelGroup: []
+      panelGroup: {}
     }
   },
   created() {
@@ -77,10 +77,9 @@ export default {
     selectPanelGroup() {
       selectPanelGroup().then(response => {
         const arr = response.data
-        for (const item in arr) {
-          this.panelGroup[item.type] = item.total
+        for (let i = 0; i < arr.length; i++) {
+          this.panelGroup[arr[i].type] = arr[i].total
         }
-        console.log(this.panelGroup)
       })
     }
   }

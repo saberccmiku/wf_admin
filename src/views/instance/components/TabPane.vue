@@ -79,9 +79,11 @@
           <el-button type="primary" size="mini" @click="handleActivity(row)">
             活动
           </el-button>
-          <el-button size="mini" type="success" @click="handleForm(row)">
-            表单
-          </el-button>
+          <router-link :to="'/instance/formDesigin'">
+            <el-button type="success" size="small">
+              表单
+            </el-button>
+          </router-link>
           <el-button size="mini" type="danger" @click="handleDelete(row)">
             删除
           </el-button>

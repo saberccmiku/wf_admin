@@ -57,7 +57,7 @@ export default {
             // 节点点击后想要做的处理
             // 此时想要点击节点后，拿到节点实例，通过外部输入更新节点名称
             this.currentElement = element
-            console.log(element)
+            // console.log(element)
           }
         // else if (eventType === 'element.hover') {
         // // 鼠标滑过节点后想要做的处理
@@ -94,7 +94,7 @@ export default {
     },
     handleDownload() {
       this.bpmnModeler.saveXML({ format: true }, (err, data) => {
-        console.log(err)
+        // console.log(err)
         const dataTrack = 'bpmn'
         const a = document.createElement('a')
         const name = `diagram.${dataTrack}`
@@ -126,7 +126,7 @@ export default {
       }
     },
     httpRequest() {
-      console.log('上传')
+      // console.log('上传')
     }
   }
 }

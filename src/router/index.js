@@ -9,7 +9,6 @@ import Layout from '@/layout'
 /* Router Modules */
 import chartsRouter from './modules/charts'
 import modelRouter from './modules/model'
-
 /**
  * Note: sub-menu only appear when route children.length >= 1
  * Detail see: https://panjiachen.github.io/vue-element-admin-site/guide/essentials/router-and-nav.html
@@ -30,7 +29,7 @@ import modelRouter from './modules/model'
     activeMenu: '/example/list'  if set path, the sidebar will highlight the path you set
   }
  */
-
+const language = localStorage.getItem('language') || (navigator.language === 'zh-CN' ? 'zh-CN' : 'en-US')
 /**
  * constantRoutes
  * a base page that does not have permission requirements
@@ -90,33 +89,6 @@ export const constantRoutes = [
 export const asyncRoutes = [
   modelRouter,
   {
-    path: '/permission',
-    component: Layout,
-    redirect: '/permission/page',
-    alwaysShow: true, // will always show the root menu
-    name: 'Permission',
-    meta: {
-      title: '权限管理',
-      icon: 'lock',
-      roles: ['admin', 'editor'] // you can set roles in root nav
-    },
-    children: [
-      {
-        path: 'page',
-        component: () => import('@/views/permission/role'),
-        name: 'PagePermission',
-        meta: {
-          title: '角色列表',
-          roles: ['admin'] // or you can only set roles in sub nav
-        }
-      }
-    ]
-  },
-
-  /** when your routing map is too long, you can split it into small modules **/
-  chartsRouter,
-
-  {
     path: '/instance',
     component: Layout,
     redirect: '/instance/list',
@@ -147,6 +119,72 @@ export const asyncRoutes = [
       }
     ]
   },
+  {
+    path: '/formManager',
+    component: Layout,
+    redirect: to => ({ name: 'formManager', params: { lang: language }}),
+    alwaysShow: true, // will always show the root menu
+    name: 'formManager',
+    meta: {
+      title: '表单管理',
+      icon: 'excel'
+    },
+    children: [
+      {
+        path: 'list',
+        component: () => import('@/views/form/list'),
+        name: 'formList',
+        meta: {
+          title: '表单列表',
+          icon: 'education'
+        }
+      },
+      {
+        path: 'desigin/zh-CN',
+        component: () => import('@/views/form/desigin'),
+        name: 'formDesigin',
+        meta: {
+          title: '表单设计',
+          icon: 'clipboard'
+        }
+      },
+      {
+        path: 'test',
+        component: () => import('@/views/form/test'),
+        name: 'test',
+        meta: {
+          title: '测试',
+          icon: 'list'
+        }
+      }
+    ]
+  },
+  {
+    path: '/permission',
+    component: Layout,
+    redirect: '/permission/page',
+    alwaysShow: true, // will always show the root menu
+    name: 'Permission',
+    meta: {
+      title: '权限管理',
+      icon: 'lock',
+      roles: ['admin', 'editor'] // you can set roles in root nav
+    },
+    children: [
+      {
+        path: 'page',
+        component: () => import('@/views/permission/role'),
+        name: 'PagePermission',
+        meta: {
+          title: '角色列表',
+          roles: ['admin'] // or you can only set roles in sub nav
+        }
+      }
+    ]
+  },
+
+  /** when your routing map is too long, you can split it into small modules **/
+  chartsRouter,
   {
     path: '/icons',
     component: Layout,
