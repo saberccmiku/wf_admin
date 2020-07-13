@@ -1,42 +1,48 @@
 <template>
-  <div class="fm-uplaod-container"
+  <div
     :id="uploadId"
+    class="fm-uplaod-container"
   >
-    <draggable class="drag-img-list"
+    <draggable
       v-model="fileList"
+      class="drag-img-list"
       v-bind="{group: uploadId, ghostClass: 'ghost', animation: 200}"
       :no-transition-on-drag="true"
     >
-      <div 
+      <div
+        v-for="(item) in fileList"
         :id="item.key"
+        :key="item.key"
         :style="{width: width+'px', height: height+'px'}"
         :class="{uploading: item.status=='uploading', 'is-success': item.status=='success', 'is-diabled': disabled}"
-        class="upload-file" v-for="(item) in fileList" :key="item.key">
-        <img :src="item.url" />
+        class="upload-file"
+      >
+        <img :src="item.url">
 
-        <el-progress v-if="item.status=='uploading'" :width="miniWidth*0.9" class="upload-progress" type="circle" :percentage="item.percent"></el-progress>
+        <el-progress v-if="item.status=='uploading'" :width="miniWidth*0.9" class="upload-progress" type="circle" :percentage="item.percent" />
 
-        <label class="item-status" v-if="item.status=='success'">
-          <i class="el-icon-upload-success el-icon-check"></i>
+        <label v-if="item.status=='success'" class="item-status">
+          <i class="el-icon-upload-success el-icon-check" />
         </label>
 
-        <div class="uplaod-action" :style="{height: miniWidth / 4 + 'px'}" v-if="!disabled">
-          <i class="iconfont icon-tupianyulan" :title="$t('fm.upload.preview')" @click="handlePreviewFile(item.key)" :style="{'font-size': miniWidth/8+'px'}"></i>
-          <i v-if="isEdit" class="iconfont icon-sync1" :title="$t('fm.upload.edit')" @click="handleEdit(item.key)" :style="{'font-size': miniWidth/8+'px'}"></i>
-          <i v-if="isDelete && fileList.length > min" class="iconfont icon-delete" :title="$t('fm.upload.delete')" @click="handleRemove(item.key)" :style="{'font-size': miniWidth/8+'px'}"></i>
+        <div v-if="!disabled" class="uplaod-action" :style="{height: miniWidth / 4 + 'px'}">
+          <i class="iconfont icon-tupianyulan" :title="$t('fm.upload.preview')" :style="{'font-size': miniWidth/8+'px'}" @click="handlePreviewFile(item.key)" />
+          <i v-if="isEdit" class="iconfont icon-sync1" :title="$t('fm.upload.edit')" :style="{'font-size': miniWidth/8+'px'}" @click="handleEdit(item.key)" />
+          <i v-if="isDelete && fileList.length > min" class="iconfont icon-delete" :title="$t('fm.upload.delete')" :style="{'font-size': miniWidth/8+'px'}" @click="handleRemove(item.key)" />
         </div>
       </div>
     </draggable>
 
-    <div class="el-upload el-upload--picture-card"
-      :class="{'is-disabled': disabled}"
+    <div
       v-show="(!isQiniu || (isQiniu && token)) && fileList.length < length"
+      class="el-upload el-upload--picture-card"
+      :class="{'is-disabled': disabled}"
       :style="{width: width+'px', height: height+'px'}"
       @click.self="handleAdd"
     >
-      <i class="el-icon-plus" @click.self="handleAdd" :style="{fontSize:miniWidth/4+'px',marginTop: (-miniWidth/8)+'px', marginLeft: (-miniWidth/8)+'px'}"></i>
-      <input accept="image/*" v-if="multiple"  multiple ref="uploadInput" @change="handleChange" type="file" :style="{width: 0, height: 0}" name="file" class="el-upload__input upload-input">
-      <input accept="image/*" v-else ref="uploadInput" @change="handleChange" type="file" :style="{width:0, height: 0}" name="file" class="el-upload__input upload-input">
+      <i class="el-icon-plus" :style="{fontSize:miniWidth/4+'px',marginTop: (-miniWidth/8)+'px', marginLeft: (-miniWidth/8)+'px'}" @click.self="handleAdd" />
+      <input v-if="multiple" ref="uploadInput" accept="image/*" multiple type="file" :style="{width: 0, height: 0}" name="file" class="el-upload__input upload-input" @change="handleChange">
+      <input v-else ref="uploadInput" accept="image/*" type="file" :style="{width:0, height: 0}" name="file" class="el-upload__input upload-input" @change="handleChange">
     </div>
   </div>
 </template>
@@ -108,7 +114,7 @@ export default {
       default: false
     }
   },
-  data () {
+  data() {
     return {
       fileList: this.value.map(item => {
         return {
@@ -121,11 +127,11 @@ export default {
       viewer: null,
       uploadId: 'upload_' + new Date().getTime(),
       editIndex: -1,
-      meituIndex: -1,
+      meituIndex: -1
     }
   },
   computed: {
-    miniWidth () {
+    miniWidth() {
       if (this.width > this.height) {
         return this.height
       } else {
@@ -133,14 +139,22 @@ export default {
       }
     }
   },
-  mounted () {
+  watch: {
+    'fileList': {
+      deep: true,
+      handler(val) {
+        // this.$emit('input', this.fileList)
+      }
+    }
+  },
+  mounted() {
     this.$emit('input', this.fileList)
   },
   methods: {
-    handleChange () {
+    handleChange() {
       // console.log(this.$refs.uploadInput.files)
       const files = this.$refs.uploadInput.files
-      
+
       for (let i = 0; i < files.length; i++) {
         const file = files[i]
         const reader = new FileReader()
@@ -148,7 +162,6 @@ export default {
         reader.readAsDataURL(file)
         reader.onload = () => {
           if (this.editIndex >= 0) {
-
             this.$set(this.fileList, this.editIndex, {
               key,
               url: reader.result,
@@ -176,25 +189,24 @@ export default {
         }
       }
       this.$refs.uploadInput.value = []
-    }, 
-    uplaodAction (res, file, key) {
-      let changeIndex = this.fileList.findIndex(item => item.key === key)
+    },
+    uplaodAction(res, file, key) {
+      const changeIndex = this.fileList.findIndex(item => item.key === key)
       // console.log(this.fileList.findIndex(item => item.key === key))
       const xhr = new XMLHttpRequest()
-      
+
       const url = this.action
       xhr.open('POST', url, true)
       // xhr.setRequestHeader('Content-Type', 'multipart/form-data')
 
-      let formData = new FormData()
+      const formData = new FormData()
       formData.append('file', file)
 
       xhr.send(formData)
       xhr.onreadystatechange = () => {
         // console.log(xhr)
         if (xhr.readyState === 4) {
-          
-          let resData = JSON.parse(xhr.response)
+          const resData = JSON.parse(xhr.response)
           if (resData && resData.url) {
             this.$set(this.fileList, this.fileList.findIndex(item => item.key === key), {
               ...this.fileList[this.fileList.findIndex(item => item.key === key)],
@@ -220,11 +232,11 @@ export default {
       xhr.onprogress = (res) => {
         // console.log('progress', res)
         if (res.total && res.loaded) {
-          this.$set(this.fileList[this.fileList.findIndex(item => item.key === key)], 'percent', res.loaded/res.total*100)
+          this.$set(this.fileList[this.fileList.findIndex(item => item.key === key)], 'percent', res.loaded / res.total * 100)
         }
       }
     },
-    uplaodAction2 (res, file, key) {
+    uplaodAction2(res, file, key) {
       const _this = this
       const observable = qiniu.upload(file, key, this.token, {
         fname: key,
@@ -234,18 +246,17 @@ export default {
         region: qiniu.region.z2
       })
       observable.subscribe({
-        next (res) {
+        next(res) {
           _this.$set(_this.fileList[_this.fileList.findIndex(item => item.key === key)], 'percent', parseInt(res.total.percent))
-          
         },
-        error (err) {
+        error(err) {
           _this.$set(_this.fileList, _this.fileList.findIndex(item => item.key === key), {
             ..._this.fileList[_this.fileList.findIndex(item => item.key === key)],
             status: 'error'
           })
           _this.fileList.splice(_this.fileList.findIndex(item => item.key === key), 1)
         },
-        complete (res) {
+        complete(res) {
           _this.$set(_this.fileList, _this.fileList.findIndex(item => item.key === key), {
             ..._this.fileList[_this.fileList.findIndex(item => item.key === key)],
             url: _this.domain + res.key,
@@ -261,42 +272,32 @@ export default {
         }
       })
     },
-    handleRemove (key) {
+    handleRemove(key) {
       this.fileList.splice(this.fileList.findIndex(item => item.key === key), 1)
     },
-    handleEdit (key) {
-      
+    handleEdit(key) {
       this.editIndex = this.fileList.findIndex(item => item.key === key)
-      
+
       this.$refs.uploadInput.click()
     },
-    handleMeitu (key) {
-
+    handleMeitu(key) {
       this.$emit('on-meitu', this.fileList.findIndex(item => item.key === key))
     },
-    handleAdd () {
+    handleAdd() {
       if (!this.disabled) {
         this.editIndex = -1
         this.$refs.uploadInput.click()
       }
     },
-    handlePreviewFile (key) {
+    handlePreviewFile(key) {
       this.viewer && this.viewer.destroy()
       this.uploadId = 'upload_' + new Date().getTime()
-      
+
       // console.log(this.viewer)
       this.$nextTick(() => {
         this.viewer = new Viewer(document.getElementById(this.uploadId))
         this.viewer.view(this.fileList.findIndex(item => item.key === key))
       })
-    }
-  },
-  watch: {
-    'fileList': {
-      deep: true,
-      handler (val) {
-        // this.$emit('input', this.fileList)
-      }
     }
   }
 }

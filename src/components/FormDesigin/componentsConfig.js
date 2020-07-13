@@ -9,7 +9,7 @@ export const basicComponents = [
       dataType: 'string',
       pattern: '',
       placeholder: '',
-      disabled: false,
+      disabled: false
     }
   },
   {
@@ -68,7 +68,7 @@ export const basicComponents = [
         label: 'label'
       },
       remoteFunc: '',
-      disabled: false,
+      disabled: false
     }
   },
   {
@@ -98,7 +98,7 @@ export const basicComponents = [
         label: 'label'
       },
       remoteFunc: '',
-      disabled: false,
+      disabled: false
     }
   },
   {
@@ -117,7 +117,7 @@ export const basicComponents = [
       arrowControl: true,
       format: 'HH:mm:ss',
       required: false,
-      width: '',
+      width: ''
     }
   },
   {
@@ -136,7 +136,7 @@ export const basicComponents = [
       format: 'yyyy-MM-dd',
       timestamp: false,
       required: false,
-      width: '',
+      width: ''
     }
   },
   {
@@ -178,7 +178,7 @@ export const basicComponents = [
         },
         {
           value: 'Option 2'
-        },{
+        }, {
           value: 'Option 3'
         }
       ],
@@ -198,7 +198,7 @@ export const basicComponents = [
     options: {
       defaultValue: false,
       required: false,
-      disabled: false,
+      disabled: false
     }
   },
   {
@@ -221,7 +221,7 @@ export const basicComponents = [
     icon: 'icon-wenzishezhi-',
     options: {
       defaultValue: 'This is a text',
-      customClass: '',
+      customClass: ''
     }
   }
 ]
@@ -241,7 +241,7 @@ export const advanceComponents = [
       defaultValue: [],
       size: {
         width: 100,
-        height: 100,
+        height: 100
       },
       width: '',
       tokenFunc: 'funcGetToken',

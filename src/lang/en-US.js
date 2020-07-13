@@ -26,13 +26,13 @@ export default {
         divider: 'Divider'
       },
       basic: {
-        title: 'Basic Component',
+        title: 'Basic Component'
       },
       advance: {
-        title: 'Advance Component',
+        title: 'Advance Component'
       },
       layout: {
-        title: 'Layout',
+        title: 'Layout'
       }
     },
     description: {

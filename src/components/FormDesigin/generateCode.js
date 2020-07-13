@@ -1,4 +1,4 @@
-function findRemoteFunc (list, funcList, tokenFuncList, blankList) {
+function findRemoteFunc(list, funcList, tokenFuncList, blankList) {
   for (let i = 0; i < list.length; i++) {
     if (list[i].type == 'grid') {
       list[i].columns.forEach(item => {
@@ -33,8 +33,7 @@ function findRemoteFunc (list, funcList, tokenFuncList, blankList) {
   }
 }
 
-export default function (data, type = 'vue') {
-
+export default function(data, type = 'vue') {
   const funcList = []
 
   const tokenFuncList = []
@@ -47,7 +46,7 @@ export default function (data, type = 'vue') {
 
   let blankTemplate = ''
 
-  for(let i = 0; i < funcList.length; i++) {
+  for (let i = 0; i < funcList.length; i++) {
     funcTemplate += `
             ${funcList[i].func} (resolve) {
               // ${funcList[i].label} ${funcList[i].model}
@@ -57,7 +56,7 @@ export default function (data, type = 'vue') {
     `
   }
 
-  for(let i = 0; i < tokenFuncList.length; i++) {
+  for (let i = 0; i < tokenFuncList.length; i++) {
     funcTemplate += `
             ${tokenFuncList[i].func} (resolve) {
               // ${tokenFuncList[i].label} ${tokenFuncList[i].model}
