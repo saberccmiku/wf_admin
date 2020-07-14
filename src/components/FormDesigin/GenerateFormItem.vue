@@ -212,7 +212,24 @@ export default {
   components: {
     FmUpload
   },
-  props: ['widget', 'models', 'rules', 'remote'],
+  props: {
+    widget: {
+      type: Object,
+      default: null
+    },
+    models: {
+      type: Object,
+      default: null
+    },
+    rules: {
+      type: Object,
+      default: null
+    },
+    remote: {
+      type: Object,
+      default: null
+    }
+  },
   data() {
     return {
       dataModel: this.models[this.widget.model]

@@ -1,18 +1,18 @@
 function findRemoteFunc(list, funcList, tokenFuncList, blankList) {
   for (let i = 0; i < list.length; i++) {
-    if (list[i].type == 'grid') {
+    if (list[i].type === 'grid') {
       list[i].columns.forEach(item => {
         findRemoteFunc(item.list, funcList, tokenFuncList, blankList)
       })
     } else {
-      if (list[i].type == 'blank') {
+      if (list[i].type === 'blank') {
         if (list[i].model) {
           blankList.push({
             name: list[i].model,
             label: list[i].name
           })
         }
-      } else if (list[i].type == 'imgupload') {
+      } else if (list[i].type === 'imgupload') {
         if (list[i].options.tokenFunc) {
           tokenFuncList.push({
             func: list[i].options.tokenFunc,
@@ -75,7 +75,7 @@ export default function(data, type = 'vue') {
     `
   }
 
-  if (type == 'vue') {
+  if (type === 'vue') {
     return `<template>
   <div>
     <fm-generate-form :data="jsonData" :remote="remoteFuncs" :value="editData" ref="generateForm">

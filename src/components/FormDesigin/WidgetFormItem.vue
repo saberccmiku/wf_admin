@@ -42,8 +42,8 @@
         :disabled="element.options.disabled"
       >
         <el-radio
-          v-for="(item, index) in element.options.options"
-          :key="item.value + index"
+          v-for="(item, number) in element.options.options"
+          :key="item.value + number"
           :style="{display: element.options.inline ? 'inline-block' : 'block'}"
           :label="item.value"
         >
@@ -59,8 +59,8 @@
         :disabled="element.options.disabled"
       >
         <el-checkbox
-          v-for="(item, index) in element.options.options"
-          :key="item.value + index"
+          v-for="(item, number) in element.options.options"
+          :key="item.value + number"
           :style="{display: element.options.inline ? 'inline-block' : 'block'}"
           :label="item.value"
         >
@@ -207,7 +207,25 @@ export default {
   components: {
     FmUpload
   },
-  props: ['element', 'select', 'index', 'data'],
+  // props: ['element', 'select', 'index', 'data'],
+  props: {
+    element: {
+      type: Object,
+      default: null
+    },
+    select: {
+      type: Object,
+      default: null
+    },
+    index: {
+      type: Number,
+      default: 200
+    },
+    data: {
+      type: Object,
+      default: null
+    }
+  },
   data() {
     return {
       selectWidget: this.select

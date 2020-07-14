@@ -94,7 +94,7 @@ export default {
     },
     handleDownload() {
       this.bpmnModeler.saveXML({ format: true }, (err, data) => {
-        // console.log(err)
+        console.log(err)
         const dataTrack = 'bpmn'
         const a = document.createElement('a')
         const name = `diagram.${dataTrack}`

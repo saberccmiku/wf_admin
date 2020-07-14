@@ -38,17 +38,17 @@
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="表单名称" width="150px" align="center">
+      <el-table-column label="名称" width="150px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="业务名称" width="150px" align="center">
+      <el-table-column label="业务" width="150px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.project }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="业务类型" width="80px">
+      <el-table-column label="类型" width="80px">
         <template slot-scope="{row}">
           {{ row.category }}
         </template>

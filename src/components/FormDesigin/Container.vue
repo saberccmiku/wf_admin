@@ -14,12 +14,14 @@
                 @end="handleMoveEnd"
                 @start="handleMoveStart"
               >
-                <li v-for="(item, index) in basicComponents" v-if="basicFields.indexOf(item.type)>=0" :key="index" class="form-edit-widget-label" :class="{'no-put': item.type == 'divider'}">
-                  <a>
-                    <i class="icon iconfont" :class="item.icon" />
-                    <span>{{ item.name }}</span>
-                  </a>
-                </li>
+                <div v-for="(item, index) in basicComponents" :key="index">
+                  <li v-if="basicFields.indexOf(item.type)>=0" class="form-edit-widget-label" :class="{'no-put': item.type == 'divider'}">
+                    <a>
+                      <i class="icon iconfont" :class="item.icon" />
+                      <span>{{ item.name }}</span>
+                    </a>
+                  </li>
+                </div>
               </draggable>
             </template>
             <template v-if="advanceFields.length">
@@ -32,12 +34,14 @@
                 @end="handleMoveEnd"
                 @start="handleMoveStart"
               >
-                <li v-for="(item, index) in advanceComponents" v-if="advanceFields.indexOf(item.type) >= 0" :key="index" class="form-edit-widget-label" :class="{'no-put': item.type == 'table'}">
-                  <a>
-                    <i class="icon iconfont" :class="item.icon" />
-                    <span>{{ item.name }}</span>
-                  </a>
-                </li>
+                <div v-for="(item, index) in advanceComponents" :key="index">
+                  <li v-if="advanceFields.indexOf(item.type) >= 0" class="form-edit-widget-label" :class="{'no-put': item.type == 'table'}">
+                    <a>
+                      <i class="icon iconfont" :class="item.icon" />
+                      <span>{{ item.name }}</span>
+                    </a>
+                  </li>
+                </div>
               </draggable>
             </template>
             <template v-if="layoutFields.length">
@@ -50,12 +54,14 @@
                 @end="handleMoveEnd"
                 @start="handleMoveStart"
               >
-                <li v-for="(item, index) in layoutComponents" v-if="layoutFields.indexOf(item.type) >=0" :key="index" class="form-edit-widget-label no-put">
-                  <a>
-                    <i class="icon iconfont" :class="item.icon" />
-                    <span>{{ item.name }}</span>
-                  </a>
-                </li>
+                <div v-for="(item, index) in layoutComponents" :key="index">
+                  <li v-if="layoutFields.indexOf(item.type) >=0" class="form-edit-widget-label no-put">
+                    <a>
+                      <i class="icon iconfont" :class="item.icon" />
+                      <span>{{ item.name }}</span>
+                    </a>
+                  </li>
+                </div>
               </draggable>
             </template>
 
@@ -198,9 +204,9 @@ import CusDialog from './CusDialog'
 import GenerateForm from './GenerateForm'
 import Clipboard from 'clipboard'
 import { basicComponents, layoutComponents, advanceComponents } from './componentsConfig.js'
-import { loadJs, loadCss } from './util/index.js'
 import generateCode from './generateCode.js'
 import { saveForm } from '@/api/form'
+import { request } from './util/request.js'
 
 export default {
   name: 'FmMakingForm',
@@ -395,7 +401,7 @@ export default {
       this.jsonTemplate = this.widgetForm
       // console.log(JSON.stringify(this.widgetForm))
       this.$nextTick(() => {
-        const editor = ace.edit('jsoneditor')
+        const editor = this.ace.edit('jsoneditor')
         editor.session.setMode('ace/mode/json')
         if (!this.jsonClipboard) {
           this.jsonClipboard = new Clipboard('.json-btn')
@@ -411,10 +417,10 @@ export default {
       this.htmlTemplate = generateCode(JSON.stringify(this.widgetForm), 'html')
       this.vueTemplate = generateCode(JSON.stringify(this.widgetForm), 'vue')
       this.$nextTick(() => {
-        const editor = ace.edit('codeeditor')
+        const editor = this.ace.edit('codeeditor')
         editor.session.setMode('ace/mode/html')
 
-        const vueeditor = ace.edit('vuecodeeditor')
+        const vueeditor = this.ace.edit('vuecodeeditor')
         vueeditor.session.setMode('ace/mode/html')
       })
     },
@@ -446,7 +452,7 @@ export default {
     handleUpload() {
       this.uploadVisible = true
       this.$nextTick(() => {
-        this.uploadEditor = ace.edit('uploadeditor')
+        this.uploadEditor = this.ace.edit('uploadeditor')
         this.uploadEditor.session.setMode('ace/mode/json')
       })
     },

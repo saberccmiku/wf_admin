@@ -191,7 +191,7 @@ export default {
       this.$refs.uploadInput.value = []
     },
     uplaodAction(res, file, key) {
-      const changeIndex = this.fileList.findIndex(item => item.key === key)
+      // const changeIndex = this.fileList.findIndex(item => item.key === key)
       // console.log(this.fileList.findIndex(item => item.key === key))
       const xhr = new XMLHttpRequest()
 
@@ -255,6 +255,7 @@ export default {
             status: 'error'
           })
           _this.fileList.splice(_this.fileList.findIndex(item => item.key === key), 1)
+          console.log('error', err)
         },
         complete(res) {
           _this.$set(_this.fileList, _this.fileList.findIndex(item => item.key === key), {

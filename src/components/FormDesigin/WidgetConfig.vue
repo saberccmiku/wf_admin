@@ -340,7 +340,7 @@ export default {
   components: {
     Draggable
   },
-  props: ['data'],
+  props: { data: { type: Object, default: null }},
   data() {
     return {
       validator: {

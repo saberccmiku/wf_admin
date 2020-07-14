@@ -63,14 +63,30 @@
 
 <script>
 import GenetateFormItem from './GenerateFormItem'
-import { loadJs } from './util/index.js'
 
 export default {
   name: 'FmGenerateForm',
   components: {
     GenetateFormItem
   },
-  props: ['data', 'remote', 'value', 'insite'],
+  props: {
+    data: {
+      type: Object,
+      default: null
+    },
+    remote: {
+      type: Object,
+      default: null
+    },
+    value: {
+      type: Object,
+      default: null
+    },
+    insite: {
+      type: Object,
+      default: null
+    }
+  },
   data() {
     return {
       models: {},
@@ -118,7 +134,7 @@ export default {
           if (this.rules[genList[i].model]) {
             this.rules[genList[i].model] = [...this.rules[genList[i].model], ...genList[i].rules.map(item => {
               if (item.pattern) {
-                return { ...item, pattern: eval(item.pattern) }
+                return { ...item, pattern: this.evil(item.pattern) }
               } else {
                 return { ...item }
               }
@@ -126,7 +142,7 @@ export default {
           } else {
             this.rules[genList[i].model] = [...genList[i].rules.map(item => {
               if (item.pattern) {
-                return { ...item, pattern: eval(item.pattern) }
+                return { ...item, pattern: this.evil(item.pattern) }
               } else {
                 return { ...item }
               }
@@ -134,6 +150,10 @@ export default {
           }
         }
       }
+    },
+    evil(fn) {
+      const Fn = Function
+      return new Fn('return ' + fn)()
     },
     getData() {
       return new Promise((resolve, reject) => {

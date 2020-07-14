@@ -35,15 +35,15 @@
                     @add="handleWidgetColAdd($event, element, colIndex)"
                   >
                     <transition-group name="fade" tag="div" class="widget-col-list">
-                      <widget-form-item
-                        v-for="(el, i) in col.list"
-                        v-if="el.key"
-                        :key="el.key"
-                        :element="el"
-                        :select.sync="selectWidget"
-                        :index="i"
-                        :data="col"
-                      />
+                      <div v-for="(el, i) in col.list" :key="el.key+'div'" :index="i">
+                        <widget-form-item
+                          v-if="el.key"
+                          :key="el.key"
+                          :element="el"
+                          :select.sync="selectWidget"
+                          :data="col"
+                        />
+                      </div>
                     </transition-group>
 
                   </draggable>
@@ -77,7 +77,16 @@ export default {
     Draggable,
     WidgetFormItem
   },
-  props: ['data', 'select'],
+  props: {
+    data: {
+      type: Object,
+      default: null
+    },
+    select: {
+      type: Object,
+      default: null
+    }
+  },
   data() {
     return {
       selectWidget: this.select
@@ -116,7 +125,7 @@ export default {
       // console.log('end', evt)
       const newIndex = evt.newIndex
       const to = evt.to
-      // console.log(to)
+      console.log(to)
 
       // 为拖拽到容器的元素添加唯一 key
       const key = Date.parse(new Date()) + '_' + Math.ceil(Math.random() * 99999)
