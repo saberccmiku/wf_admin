@@ -83,8 +83,8 @@ export default {
       default: null
     },
     insite: {
-      type: Object,
-      default: null
+      type: String,
+      default: ''
     }
   },
   data() {

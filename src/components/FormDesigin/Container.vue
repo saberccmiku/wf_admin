@@ -401,7 +401,7 @@ export default {
       this.jsonTemplate = this.widgetForm
       // console.log(JSON.stringify(this.widgetForm))
       this.$nextTick(() => {
-        const editor = this.ace.edit('jsoneditor')
+        const editor = ace.edit('jsoneditor')
         editor.session.setMode('ace/mode/json')
         if (!this.jsonClipboard) {
           this.jsonClipboard = new Clipboard('.json-btn')
@@ -417,10 +417,10 @@ export default {
       this.htmlTemplate = generateCode(JSON.stringify(this.widgetForm), 'html')
       this.vueTemplate = generateCode(JSON.stringify(this.widgetForm), 'vue')
       this.$nextTick(() => {
-        const editor = this.ace.edit('codeeditor')
+        const editor = ace.edit('codeeditor')
         editor.session.setMode('ace/mode/html')
 
-        const vueeditor = this.ace.edit('vuecodeeditor')
+        const vueeditor = ace.edit('vuecodeeditor')
         vueeditor.session.setMode('ace/mode/html')
       })
     },
@@ -452,7 +452,7 @@ export default {
     handleUpload() {
       this.uploadVisible = true
       this.$nextTick(() => {
-        this.uploadEditor = this.ace.edit('uploadeditor')
+        this.uploadEditor = ace.edit('uploadeditor')
         this.uploadEditor.session.setMode('ace/mode/json')
       })
     },

@@ -22,7 +22,6 @@ import 'bpmn-js/dist/assets/diagram-js.css' // vue项目中的用到流程图bpm
 import 'bpmn-js/dist/assets/bpmn-font/css/bpmn-embedded.css' // vue项目中的用到流程图bpmn
 
 import VueEditor from 'vue2-editor'
-
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api
@@ -51,7 +50,6 @@ Object.keys(filters).forEach(key => {
 // import FormMaking from 'form-making'
 import FormMaking from './index'
 Vue.use(FormMaking)
-
 Vue.config.productionTip = false
 
 new Vue({
