@@ -10,7 +10,6 @@
       :label-width="data.config.labelWidth + 'px'"
     >
       <template v-for="item in data.list">
-
         <template v-if="item.type == 'grid'">
           <el-row
             :key="item.key"
@@ -20,7 +19,6 @@
             :align="item.options.align"
           >
             <el-col v-for="(col, colIndex) in item.columns" :key="colIndex" :span="col.span">
-
               <template v-for="citem in col.list">
                 <el-form-item v-if="citem.type=='blank'" :key="citem.key" :label="citem.name" :prop="citem.model">
                   <slot :name="citem.model" :model="models" />
@@ -49,13 +47,12 @@
           <genetate-form-item
             :key="item.key"
             :models.sync="models"
+            :remote="remote"
             :rules="rules"
             :widget="item"
-            :remote="remote"
             @input-change="onInputChange"
           />
         </template>
-
       </template>
     </el-form>
   </div>
@@ -130,7 +127,6 @@ export default {
               this.models[genList[i].model] = genList[i].options.defaultValue
             }
           }
-
           if (this.rules[genList[i].model]) {
             this.rules[genList[i].model] = [...this.rules[genList[i].model], ...genList[i].rules.map(item => {
               if (item.pattern) {
@@ -173,7 +169,6 @@ export default {
       this.$emit('on-change', field, value, this.models)
     },
     refresh() {
-
     }
   }
 }

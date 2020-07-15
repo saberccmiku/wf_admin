@@ -161,6 +161,7 @@ export default {
         hidden: '隐藏',
         readonly: '完全只读',
         disabled: '禁用',
+        show: '显示/隐藏',
         editable: '文本框可输入',
         clearable: '显示清除按钮',
         arrowControl: '使用箭头进行时间选择',

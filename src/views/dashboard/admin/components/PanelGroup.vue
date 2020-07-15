@@ -64,7 +64,7 @@ export default {
   },
   data() {
     return {
-      panelGroup: {}
+      panelGroup: { totalTenant: 0, totalProcessInstance: 0, totalTodo: 0, totalDone: 0 }
     }
   },
   created() {

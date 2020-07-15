@@ -146,6 +146,16 @@ export const asyncRoutes = [
         meta: {
           title: '表单设计',
           icon: 'clipboard'
+        },
+        hidden: true
+      },
+      {
+        path: 'desigin/zh-CN/:id',
+        component: () => import('@/views/form/desigin'),
+        name: 'formDesigin',
+        meta: {
+          title: '表单设计',
+          icon: 'clipboard'
         }
       },
       {

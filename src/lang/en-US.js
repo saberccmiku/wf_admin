@@ -161,6 +161,7 @@ export default {
         hidden: 'Hidden',
         readonly: 'Read Only',
         disabled: 'Disabled',
+        show: 'Show/Hidden',
         editable: 'Text box is editable',
         clearable: 'Display Clear Button',
         arrowControl: 'Use the arrow for time selection',

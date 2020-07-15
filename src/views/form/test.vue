@@ -6,13 +6,21 @@
 </template>
 
 <script>
+import { getTenantList } from '@/api/tenant'
 export default {
   data() {
     return {
-      jsonData: { 'list': [{ 'type': 'grid', 'icon': 'icon-grid-', 'columns': [{ 'span': 12, 'list': [{ 'type': 'input', 'icon': 'icon-input', 'options': { 'width': '100%', 'defaultValue': '', 'required': false, 'dataType': 'string', 'pattern': '', 'placeholder': '', 'disabled': false, 'remoteFunc': 'func_1594621992000_96391' }, 'name': '主键', 'key': '1594621992000_96391', 'model': 'input_1594621992000_96391', 'rules': [{ 'type': 'string', 'message': '主键格式不正确' }] }] }, { 'span': 12, 'list': [{ 'type': 'time', 'icon': 'icon-time', 'options': { 'defaultValue': '', 'readonly': false, 'disabled': false, 'editable': true, 'clearable': true, 'placeholder': '', 'startPlaceholder': '', 'endPlaceholder': '', 'isRange': false, 'arrowControl': true, 'format': 'HH:mm:ss', 'required': false, 'width': '', 'remoteFunc': 'func_1594622034000_63938' }, 'name': '日期', 'key': '1594622034000_63938', 'model': 'time_1594622034000_63938', 'rules': [] }] }, { 'span': 12, 'list': [{ 'type': 'input', 'icon': 'icon-input', 'options': { 'width': '100%', 'defaultValue': '', 'required': false, 'dataType': 'string', 'pattern': '', 'placeholder': '', 'disabled': false, 'remoteFunc': 'func_1594621996000_55568' }, 'name': '标题', 'key': '1594621996000_55568', 'model': 'input_1594621996000_55568', 'rules': [{ 'type': 'string', 'message': '标题格式不正确' }] }] }], 'options': { 'gutter': 0, 'justify': 'start', 'align': 'top', 'remoteFunc': 'func_1594621978000_1899' }, 'name': '栅格布局', 'key': '1594621978000_1899', 'model': 'grid_1594621978000_1899', 'rules': [] }], 'config': { 'labelWidth': 100, 'labelPosition': 'right', 'size': 'small' }},
+      jsonData: {},
+      // jsonData: {"list":[{"type":"input","icon":"icon-input","options":{"width":"100%","defaultValue":"","required":false,"dataType":"string","pattern":"","placeholder":"","disabled":false,"remoteFunc":"func_1594635958000_94573"},"name":"第一行","key":"1594635958000_94573","model":"input_1594635958000_94573","rules":[{"type":"string","message":"第一行格式不正确"}]},{"type":"input","icon":"icon-input","options":{"width":"100%","defaultValue":"","required":false,"dataType":"string","pattern":"","placeholder":"","show":true,"disabled":false,"remoteFunc":"func_1594635959000_51714"},"name":"第二行","key":"1594635959000_51714","model":"input_1594635959000_51714","rules":[{"type":"string","message":"第二行格式不正确"}]},{"type":"cascader","icon":"icon-jilianxuanze","options":{"defaultValue":[],"width":"","placeholder":"","disabled":false,"clearable":false,"remote":true,"remoteOptions":[],"props":{"value":"id","label":"name","children":"children"},"remoteFunc":"getRoles"},"name":"级联选择器","key":"1594796523000_99836","model":"cascader_1594796523000_99836","rules":[]}],"config":{"labelWidth":100,"labelPosition":"right","size":"small"}},
       editData: {},
       remoteFuncs: {
-
+        getRoles(resolve) {
+          // 级联选择器 cascader_1594796523000_99836
+          // Call callback function once get the data from remote server
+          getTenantList().then(res => {
+            resolve(res.data)
+          })
+        }
       }
     }
   },

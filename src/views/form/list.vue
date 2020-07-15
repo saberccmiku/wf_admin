@@ -70,33 +70,58 @@
       </el-table-column>
       <el-table-column label="操作" align="center" width="300" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
-          <el-button type="Background W" size="mini" @click="handleUpdate(row)">
+          <el-button type="Background W" size="mini" @click="handlePreview(row)">
             预览
           </el-button>
-          <el-button size="mini" type="success" @click="handlePublish(row)">
-            编辑
-          </el-button>
+          <router-link :to="'/formManager/desigin/zh-CN/'+row.id">
+            <el-button size="mini" type="success">
+              编辑
+            </el-button>
+          </router-link>
           <el-button size="mini" type="danger" @click="handleDelete(row)">
             删除
           </el-button>
         </template>
       </el-table-column>
     </el-table>
+    <cus-dialog
+      ref="widgetPreview"
+      :visible="previewVisible"
+      width="1000px"
+      form
+      @on-close="previewVisible = false"
+    >
+      <generate-form v-if="previewVisible" ref="generateForm" insite="true" :data="widgetForm" :value="widgetModels" :remote="remoteFuncs" @on-change="handleDataChange">
+
+        <template v-slot:blank="scope">
+          Width <el-input v-model="scope.model.blank.width" style="width: 100px" />
+          Height <el-input v-model="scope.model.blank.height" style="width: 100px" />
+        </template>
+      </generate-form>
+
+      <template slot="action">
+        <el-button type="primary" @click="handleTest">{{ $t('fm.actions.getData') }}</el-button>
+        <el-button @click="handleReset">{{ $t('fm.actions.reset') }}</el-button>
+      </template>
+    </cus-dialog>
 
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
   </div>
 </template>
 
 <script>
-import { pageForm, deleteForm, publish } from '@/api/form'
+import { pageForm, deleteForm } from '@/api/form'
 import { getTenantList } from '@/api/tenant'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+import CusDialog from '@/components/FormDesigin/CusDialog'
+import GenerateForm from '@/components/FormDesigin/GenerateForm'
+import { request } from '@/util/request.js'
 
 export default {
   name: 'ComplexTable',
-  components: { Pagination },
+  components: { Pagination, CusDialog, GenerateForm },
   directives: { waves },
   filters: {
     statusFilter(status) {
@@ -117,6 +142,37 @@ export default {
       listQuery: {
         current: 1,
         size: 20
+      },
+      widgetForm: {
+        list: [],
+        config: {
+          labelWidth: 100,
+          labelPosition: 'right',
+          size: 'small'
+        }
+      },
+      widgetModels: {},
+      previewVisible: false,
+      remoteFuncs: {
+        func_test(resolve) {
+          setTimeout(() => {
+            const options = [
+              { id: '1', name: '1111' },
+              { id: '2', name: '2222' },
+              { id: '3', name: '3333' }
+            ]
+
+            resolve(options)
+          }, 2000)
+        },
+        funcGetToken(resolve) {
+          request.get('http://tools-server.xiaoyaoji.cn/api/uptoken').then(res => {
+            resolve(res.uptoken)
+          })
+        },
+        upload_callback(response, file, fileList) {
+          console.log('callback', response, file, fileList)
+        }
       },
       categories: [],
       tenants: [],
@@ -145,26 +201,23 @@ export default {
         this.tenants = response.data
       })
     },
-    handlePublish(row) {
-      this.$confirm('此操作将新增流程版本,改变原来的业务需求, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        // this.listLoading = true
-        publish(row.id).then(response => {
-          this.$notify({
-            title: 'Success',
-            message: '发布成功',
-            type: 'success',
-            duration: 2000
-          })
-          this.getList()
-        })
+    handlePreview(row) {
+      this.widgetForm = JSON.parse(row.json)
+      this.previewVisible = true
+    },
+    handleTest() {
+      this.$refs.generateForm.getData().then(data => {
+        this.$alert(data, '').catch(e => {})
+        this.$refs.widgetPreview.end()
+      }).catch(e => {
+        this.$refs.widgetPreview.end()
       })
     },
-    handleUpdate(row) {
-      window.location.href = process.env.VUE_APP_BASE_API + '/workflow/modeler.html?modelId=' + row.id
+    handleReset() {
+      this.$refs.generateForm.reset()
+    },
+    handleDataChange(field, value, data) {
+      console.log(field, value, data)
     },
     handleDownload() {
       this.downloadLoading = true

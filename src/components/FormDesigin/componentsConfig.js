@@ -9,7 +9,8 @@ export const basicComponents = [
       dataType: 'string',
       pattern: '',
       placeholder: '',
-      disabled: false
+      disabled: false,
+      show: true
     }
   },
   {
@@ -20,6 +21,7 @@ export const basicComponents = [
       defaultValue: '',
       required: false,
       disabled: false,
+      show: true,
       pattern: '',
       placeholder: ''
     }
@@ -35,6 +37,7 @@ export const basicComponents = [
       max: '',
       step: 1,
       disabled: false,
+      show: true,
       controlsPosition: ''
     }
   },
@@ -68,7 +71,8 @@ export const basicComponents = [
         label: 'label'
       },
       remoteFunc: '',
-      disabled: false
+      disabled: false,
+      show: true
     }
   },
   {
@@ -98,7 +102,8 @@ export const basicComponents = [
         label: 'label'
       },
       remoteFunc: '',
-      disabled: false
+      disabled: false,
+      show: true
     }
   },
   {
@@ -108,6 +113,7 @@ export const basicComponents = [
       defaultValue: '21:19:56',
       readonly: false,
       disabled: false,
+      show: true,
       editable: true,
       clearable: true,
       placeholder: '',
@@ -127,6 +133,7 @@ export const basicComponents = [
       defaultValue: '',
       readonly: false,
       disabled: false,
+      show: true,
       editable: true,
       clearable: true,
       placeholder: '',
@@ -146,6 +153,7 @@ export const basicComponents = [
       defaultValue: null,
       max: 5,
       disabled: false,
+      show: true,
       allowHalf: false,
       required: false
     }
@@ -156,6 +164,7 @@ export const basicComponents = [
     options: {
       defaultValue: '',
       disabled: false,
+      show: true,
       showAlpha: false,
       required: false
     }
@@ -167,6 +176,7 @@ export const basicComponents = [
       defaultValue: '',
       multiple: false,
       disabled: false,
+      show: true,
       clearable: false,
       placeholder: '',
       required: false,
@@ -198,7 +208,8 @@ export const basicComponents = [
     options: {
       defaultValue: false,
       required: false,
-      disabled: false
+      disabled: false,
+      show: true
     }
   },
   {
@@ -207,6 +218,7 @@ export const basicComponents = [
     options: {
       defaultValue: 0,
       disabled: false,
+      show: true,
       required: false,
       min: 0,
       max: 100,
@@ -248,6 +260,7 @@ export const advanceComponents = [
       token: '',
       domain: 'http://pfp81ptt6.bkt.clouddn.com/',
       disabled: false,
+      show: true,
       length: 8,
       multiple: false,
       isQiniu: false,
@@ -273,6 +286,7 @@ export const advanceComponents = [
       width: '',
       placeholder: '',
       disabled: false,
+      show: true,
       clearable: false,
       remote: true,
       remoteOptions: [],

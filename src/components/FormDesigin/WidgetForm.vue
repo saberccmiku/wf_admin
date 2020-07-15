@@ -94,6 +94,11 @@ export default {
     }
   },
   watch: {
+    data: function(val) {
+      if (val !== null && val.length !== 0 && this.select === null) {
+        this.selectWidget = val.list[0]
+      }
+    },
     select(val) {
       this.selectWidget = val
     },

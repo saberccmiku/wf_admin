@@ -14,14 +14,14 @@
                 @end="handleMoveEnd"
                 @start="handleMoveStart"
               >
-                <div v-for="(item, index) in basicComponents" :key="index">
-                  <li v-if="basicFields.indexOf(item.type)>=0" class="form-edit-widget-label" :class="{'no-put': item.type == 'divider'}">
+                <template v-for="(item, index) in basicComponents">
+                  <li v-if="basicFields.indexOf(item.type)>=0" :key="index" class="form-edit-widget-label" :class="{'no-put': item.type == 'divider'}">
                     <a>
                       <i class="icon iconfont" :class="item.icon" />
                       <span>{{ item.name }}</span>
                     </a>
                   </li>
-                </div>
+                </template>
               </draggable>
             </template>
             <template v-if="advanceFields.length">
@@ -34,14 +34,14 @@
                 @end="handleMoveEnd"
                 @start="handleMoveStart"
               >
-                <div v-for="(item, index) in advanceComponents" :key="index">
-                  <li v-if="advanceFields.indexOf(item.type) >= 0" class="form-edit-widget-label" :class="{'no-put': item.type == 'table'}">
+                <template v-for="(item, index) in advanceComponents">
+                  <li v-if="advanceFields.indexOf(item.type) >= 0" :key="index" class="form-edit-widget-label" :class="{'no-put': item.type == 'table'}">
                     <a>
                       <i class="icon iconfont" :class="item.icon" />
                       <span>{{ item.name }}</span>
                     </a>
                   </li>
-                </div>
+                </template>
               </draggable>
             </template>
             <template v-if="layoutFields.length">
@@ -54,14 +54,14 @@
                 @end="handleMoveEnd"
                 @start="handleMoveStart"
               >
-                <div v-for="(item, index) in layoutComponents" :key="index">
-                  <li v-if="layoutFields.indexOf(item.type) >=0" class="form-edit-widget-label no-put">
+                <template v-for="(item, index) in layoutComponents">
+                  <li v-if="layoutFields.indexOf(item.type) >=0" :key="index" class="form-edit-widget-label no-put">
                     <a>
                       <i class="icon iconfont" :class="item.icon" />
                       <span>{{ item.name }}</span>
                     </a>
                   </li>
-                </div>
+                </template>
               </draggable>
             </template>
 
@@ -128,6 +128,9 @@
           @on-submit="handleSaveJson"
         >
           <el-form ref="saveForm" :rules="saveFormRules" :model="saveForm" label-position="left" label-width="80px" style="width: 600px; margin-left:50px;">
+            <el-form-item label="ID" prop="id" hidden>
+              <el-input v-model="saveForm.id" />
+            </el-form-item>
             <el-form-item label="租户ID" prop="tenantId">
               <el-input v-model="saveForm.tenantId" />
             </el-form-item>
@@ -205,7 +208,7 @@ import GenerateForm from './GenerateForm'
 import Clipboard from 'clipboard'
 import { basicComponents, layoutComponents, advanceComponents } from './componentsConfig.js'
 import generateCode from './generateCode.js'
-import { saveForm } from '@/api/form'
+import { saveForm, detailForm } from '@/api/form'
 import { request } from './util/request.js'
 
 export default {
@@ -263,6 +266,7 @@ export default {
       advanceComponents,
       resetJson: false,
       saveForm: {
+        id: '',
         name: '',
         category: '',
         tenantId: '',
@@ -342,10 +346,23 @@ export default {
       this._loadComponents()
     }
   },
+  created() {
+    if (this.$route.params.id !== null || this.$route.params.id !== '') {
+      this.detailForm(this.$route.params.id)
+    }
+  },
   mounted() {
     this._loadComponents()
   },
   methods: {
+    detailForm(id) {
+      detailForm(id).then(res => {
+        if (res.data != null) {
+          this.saveForm = res.data
+          this.widgetForm = JSON.parse(this.saveForm.json)
+        }
+      })
+    },
     _loadComponents() {
       this.basicComponents = this.basicComponents.map(item => {
         return {
@@ -467,10 +484,6 @@ export default {
     },
     handleClear() {
       this.widgetForm = {
-        name: '',
-        category: '',
-        tenantId: '',
-        des: '',
         list: [],
         config: {
           labelWidth: 100,
