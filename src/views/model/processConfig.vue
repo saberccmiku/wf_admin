@@ -2,7 +2,7 @@
   <div class="containerBox">
     <div id="container" />
     <el-drawer title="userTask" :visible.sync="drawer" :with-header="false">
-      <el-form ref="form" :model="form" label-width="80px" style="margin:20px">
+      <el-form ref="form" :model="form" label-width="auto" style="margin:20px" class="formElInput">
         <el-form-item label="节点名称">
           {{ form.name }}
         </el-form-item>
@@ -10,9 +10,19 @@
           {{ form.id }}
         </el-form-item>
         <el-form-item label="执行角色">
-          <el-popover placement="top-start" width="200" trigger="hover" :content="defaultRoleLable">
-            <el-cascader slot="reference" v-model="defaultRole" :options="options" :props="{ expandTrigger: 'hover' }" @change="handleChange" />
+          <el-popover placement="top-start" trigger="hover" :content="defaultRoleLable">
+            <el-cascader slot="reference" v-model="defaultRole" class="formEl" :options="options" :props="{ expandTrigger: 'hover' }" @change="handleChange" />
           </el-popover>
+        </el-form-item>
+        <el-form-item label="执行表单">
+          <el-input
+            v-model="selectedForm.name"
+            class="formEl"
+            placeholder="请输入内容"
+            :disabled="true"
+            @click.native="handleForm"
+          />
+          <svg-icon icon-class="excel" @click="handleFeild" />
         </el-form-item>
         <el-form-item label="周期限制">
           <el-radio-group v-model="form.resource">
@@ -30,16 +40,119 @@
         </el-form-item>
       </el-form>
     </el-drawer>
+    <!-- 这是表单选择的dialog -->
+    <el-dialog
+      :visible.sync="formVisible"
+      width="50%"
+      center
+    >
+      <h1 slot="title">
+        <el-tag type="success">双击对应区域选择表单</el-tag>
+      </h1>
+      <el-table
+        v-loading="listLoading"
+        :data="formList"
+        border
+        fit
+        highlight-current-row
+        style="width: 100%;"
+        @row-click="handleSelect"
+      >
+        <el-table-column label="ID" prop="id" sortable="custom" align="center" width="80">
+          <template slot-scope="{row}">
+            <span>{{ row.id }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="名称" width="150px" align="center">
+          <template slot-scope="{row}">
+            <span>{{ row.name }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="业务" width="150px" align="center">
+          <template slot-scope="{row}">
+            <span>{{ row.project }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="类型" width="80px">
+          <template slot-scope="{row}">
+            {{ row.category }}
+          </template>
+        </el-table-column>
+        <el-table-column label="更新日期" width="230px" align="center">
+          <template slot-scope="{row}">
+            <span>{{ parseTime(new Date(row.createTime)) }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="描述" min-width="90px">
+          <template slot-scope="{row}">
+            <span>{{ row.des }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="租户" align="center" width="95">
+          <template slot-scope="{row}">
+            {{ row.tenantId }}
+          </template>
+        </el-table-column>
+      </el-table>
+      <pagination v-show="listQuery.total>0" :total="listQuery.total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="handleForm" />
+    </el-dialog>
+    <!-- 这是字段管理的dialog -->
+    <el-dialog
+      :visible.sync="formFieldVisible"
+      width="30%"
+    >
+      <span slot="title">
+        <el-tag type="success">字段管理器</el-tag>
+      </span>
+      <el-table
+        :data="fields"
+        style="width: 100%"
+      >
+        <el-table-column
+          label="字段标识"
+          width="180"
+        >
+          <template slot-scope="scope">
+            <i class="el-icon-medal" />
+            <span style="margin-left: 10px">{{ scope.row.model }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="字段名称"
+          width="180"
+        >
+          <template slot-scope="scope">
+            <el-tag size="medium">{{ scope.row.name }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作">
+          <template slot-scope="scope">
+            <el-switch
+              v-model="scope.row.options.show"
+              active-text="显示"
+              inactive-text="隐藏"
+            />
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-dialog>
+
   </div>
 </template>
 <script>
 import BpmnModeler from 'bpmn-js/lib/Modeler'
-import camundaExtension from '../../resources/stencilset.json'
+import camundaExtension from '@/resources/stencilset.json'
 import { exportProcessXmlByModelId, roleListForCascadeSelector, saveModel } from '@/api/model'
-import customTranslate from '../../resources/customTranslate/customTranslate'
+import customTranslate from '@/resources/customTranslate/customTranslate'
+import { pageForm } from '@/api/form'
+import { parseTime } from '@/utils'
+import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 // import {tempDetail, saveCanvas} from '@api/processConfig';
 export default {
   name: 'Index',
+  components: {
+    Pagination
+  },
   data() {
     return {
       containerEl: null,
@@ -51,8 +164,25 @@ export default {
       defaultRole: [],
       defaultRoleLable: '',
       options: [],
-      form: {},
-      reqModel: {}
+      form: {
+        formId: '',
+        candidateGroups: '',
+        modelId: '',
+        processDefinitionKey: ''
+      },
+      processConfig: {},
+      fields: [],
+      formFieldVisible: false,
+      formVisible: false,
+      formList: null,
+      selectedForm: {},
+      listLoading: true,
+      listQuery: {
+        total: 0,
+        limit: 10,
+        current: 1,
+        size: 10
+      }
     }
   },
   mounted() {
@@ -115,6 +245,12 @@ export default {
               // 此时想要点击节点后，拿到节点实例，通过外部输入更新节点名称
               this.currentElement = element
               this.drawer = true
+              // 初始化阶段选择的表单
+              this.selectedForm = {}
+              const currentForm = this.processConfig.formMap[element.businessObject.id]
+              if (currentForm) {
+                this.selectedForm = this.processConfig.formMap[element.businessObject.id]
+              }
               this.splitBusiness2Json(element.businessObject)
               // 处理联级选择器初选值
               this.defaultRole = []
@@ -145,17 +281,12 @@ export default {
       }
       this.form['candidateGroups'] = businessObject.$attrs['activiti:candidateGroups']
       this.form['modelId'] = this.$route.params.id
-      this.reqModel = {
-        modelId: this.$route.params.id,
-        name: this.form.name,
-        jsonXml: JSON.stringify(this.form),
-        svgXml: this.chart,
-        description: '测试'
-      }
+      this.form['formId'] = businessObject.$attrs['activiti:formKey']
     },
     exportProcessXmlByModelId() {
       exportProcessXmlByModelId(this.$route.params.id).then(response => {
-        this.chart = response.data
+        this.processConfig = response.data
+        this.chart = response.data.processXml
         this.showChart()
       })
     },
@@ -176,17 +307,51 @@ export default {
     },
     handleChange(value) {
       console.log(value)
+    },
+    handleForm() {
+      this.formVisible = true
+      this.listLoading = true
+      pageForm(this.listQuery).then(response => {
+        this.formList = response.data.records
+        this.listQuery.total = response.data.total
+        this.listLoading = false
+      })
+    },
+    handleSelect(row, event, column) {
+      this.selectedForm = row
+      this.form.formId = this.selectedForm.id
+      this.formVisible = false
+    },
+    handleFeild() {
+      this.fields.splice(0, this.fields.length)
+      const formElArr = JSON.parse(this.selectedForm.json).list
+      for (let i = 0; i < formElArr.length; i++) {
+        if (formElArr[i].type === 'grid') {
+          const gridElArr = formElArr[i].columns
+          for (let j = 0; j < gridElArr.length; j++) {
+            this.fields.push(gridElArr[j].list[0])
+          }
+        } else {
+          this.fields.push(formElArr[i])
+        }
+      }
+      this.formFieldVisible = true
+    },
+    parseTime(date) {
+      return parseTime(date)
     }
   }
 }
 </script>
 <style lang="scss">
-    .containerBox {
-        height: calc(100vh - 220px);
-        position: relative;
-
-        #container {
-            height: calc(100% - 50px);
-        }
-    }
+.containerBox {
+  height: calc(100vh - 220px);
+  position: relative;
+  #container {
+  height: calc(100% - 50px);
+  }
+}
+.formEl {
+   width: 70%;
+}
 </style>
