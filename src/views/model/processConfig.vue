@@ -99,11 +99,12 @@
     <!-- 这是字段管理的dialog -->
     <el-dialog
       :visible.sync="formFieldVisible"
-      width="30%"
+      width="40%"
+      center
     >
-      <span slot="title">
+      <!-- <span slot="title">
         <el-tag type="success">字段管理器</el-tag>
-      </span>
+      </span> -->
       <el-table
         :data="fields"
         style="width: 100%"
@@ -113,7 +114,6 @@
           width="180"
         >
           <template slot-scope="scope">
-            <i class="el-icon-medal" />
             <span style="margin-left: 10px">{{ scope.row.model }}</span>
           </template>
         </el-table-column>
@@ -122,10 +122,10 @@
           width="180"
         >
           <template slot-scope="scope">
-            <el-tag size="medium">{{ scope.row.name }}</el-tag>
+            <span style="margin-left: 10px">{{ scope.row.name }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="操作">
+        <el-table-column label="显示/隐藏">
           <template slot-scope="scope">
             <el-switch
               v-model="scope.row.options.show"
@@ -134,7 +134,20 @@
             />
           </template>
         </el-table-column>
+        <el-table-column label="只读/编辑">
+          <template slot-scope="scope">
+            <el-switch
+              v-model="scope.row.options.disabled"
+              active-text="只读"
+              inactive-text="编辑"
+            />
+          </template>
+        </el-table-column>
       </el-table>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="formFieldVisible = false">取 消</el-button>
+        <el-button type="primary" @click="handleFormProperties">确 定</el-button>
+      </span>
     </el-dialog>
 
   </div>
@@ -165,10 +178,11 @@ export default {
       defaultRoleLable: '',
       options: [],
       form: {
-        formId: '',
+        formKey: '',
         candidateGroups: '',
         modelId: '',
-        processDefinitionKey: ''
+        processDefinitionKey: '',
+        formProperties: []
       },
       processConfig: {},
       fields: [],
@@ -253,7 +267,7 @@ export default {
               }
               this.splitBusiness2Json(element.businessObject)
               // 处理联级选择器初选值
-              this.defaultRole = []
+              this.defaultRole.splice(0, this.defaultRole.length)
               this.defaultRoleLable = ''
               var roleId = this.form['candidateGroups']
               for (var i = 0; i < this.options.length; i++) {
@@ -279,9 +293,12 @@ export default {
       for (let i = 0; i < baseArrs.length; i++) {
         this.form[baseArrs[i][0]] = baseArrs[i][1]
       }
-      this.form['candidateGroups'] = businessObject.$attrs['activiti:candidateGroups']
+      const attrs = businessObject.$attrs
+      for (const key in attrs) {
+        // 因为xml节点会自动在节点前缀 activiti: 和后台数据不匹配
+        this.form[key.replace('activiti:', '')] = attrs[key]
+      }
       this.form['modelId'] = this.$route.params.id
-      this.form['formId'] = businessObject.$attrs['activiti:formKey']
     },
     exportProcessXmlByModelId() {
       exportProcessXmlByModelId(this.$route.params.id).then(response => {
@@ -319,7 +336,7 @@ export default {
     },
     handleSelect(row, event, column) {
       this.selectedForm = row
-      this.form.formId = this.selectedForm.id
+      this.form.formKey = this.selectedForm.id
       this.formVisible = false
     },
     handleFeild() {
@@ -336,6 +353,27 @@ export default {
         }
       }
       this.formFieldVisible = true
+    },
+    handleFormProperties() {
+      this.formFieldVisible = false
+      const formProperties = []
+      for (let i = 0; i < this.fields.length; i++) {
+        // 定义一个后台需要的表单属性json对象
+        const gridEl = this.fields[i]
+        const formProperty = {
+          id: gridEl.model,
+          name: gridEl.name,
+          writeable: gridEl.disable,
+          required: gridEl.required,
+          attributes: [
+            {
+              show: gridEl.show
+            }
+          ]
+        }
+        formProperties.push(formProperty)
+      }
+      console.log(formProperties)
     },
     parseTime(date) {
       return parseTime(date)

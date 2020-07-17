@@ -209,7 +209,7 @@ import Clipboard from 'clipboard'
 import { basicComponents, layoutComponents, advanceComponents } from './componentsConfig.js'
 import generateCode from './generateCode.js'
 import { saveForm, detailForm } from '@/api/form'
-import { request } from './util/request.js'
+import { request } from '@/util/request.js'
 
 export default {
   name: 'FmMakingForm',
