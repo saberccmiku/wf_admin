@@ -2,12 +2,12 @@
   <div class="containerBox">
     <div id="container" />
     <el-drawer title="userTask" :visible.sync="drawer" :with-header="false">
-      <el-form ref="form" :model="form" label-width="auto" style="margin:20px" class="formElInput">
+      <el-form ref="modelNode" :model="modelNode" label-width="auto" style="margin:20px" class="formElInput">
         <el-form-item label="节点名称">
-          {{ form.name }}
+          {{ modelNode.name }}
         </el-form-item>
         <el-form-item label="节点主键">
-          {{ form.id }}
+          {{ modelNode.id }}
         </el-form-item>
         <el-form-item label="执行角色">
           <el-popover placement="top-start" trigger="hover" :content="defaultRoleLable">
@@ -25,17 +25,17 @@
           <svg-icon icon-class="excel" @click="handleFeild" />
         </el-form-item>
         <el-form-item label="周期限制">
-          <el-radio-group v-model="form.resource">
+          <el-radio-group v-model="modelNode.resource">
             <el-radio label="当天" />
             <el-radio label="两天" />
             <el-radio label="三天" />
           </el-radio-group>
         </el-form-item>
         <el-form-item label="备注说明">
-          <el-input v-model="form.desc" type="textarea" />
+          <el-input v-model="modelNode.desc" type="textarea" />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="onSubmit">保存</el-button>
+          <el-button type="primary" @click="saveModel">保存</el-button>
           <el-button @click="drawer=false">取消</el-button>
         </el-form-item>
       </el-form>
@@ -177,12 +177,12 @@ export default {
       defaultRole: [],
       defaultRoleLable: '',
       options: [],
-      form: {
+      modelNode: {
         formKey: '',
         candidateGroups: '',
         modelId: '',
         processDefinitionKey: '',
-        formProperties: []
+        formProperties: ''
       },
       processConfig: {},
       fields: [],
@@ -269,7 +269,7 @@ export default {
               // 处理联级选择器初选值
               this.defaultRole.splice(0, this.defaultRole.length)
               this.defaultRoleLable = ''
-              var roleId = this.form['candidateGroups']
+              var roleId = this.modelNode['candidateGroups']
               for (var i = 0; i < this.options.length; i++) {
                 var childrens = this.options[i].children
                 for (var j = 0; j < childrens.length; j++) {
@@ -279,6 +279,8 @@ export default {
                   }
                 }
               }
+              // 处理节点表单字段
+              // const selectedFormFields = element.businessObject.extensionElements.values
             }
             // else if (eventType === 'element.hover') {
             //   // 鼠标滑过节点后想要做的处理
@@ -291,14 +293,14 @@ export default {
     splitBusiness2Json(businessObject) {
       const baseArrs = Object.entries(businessObject)
       for (let i = 0; i < baseArrs.length; i++) {
-        this.form[baseArrs[i][0]] = baseArrs[i][1]
+        this.modelNode[baseArrs[i][0]] = baseArrs[i][1]
       }
       const attrs = businessObject.$attrs
       for (const key in attrs) {
         // 因为xml节点会自动在节点前缀 activiti: 和后台数据不匹配
-        this.form[key.replace('activiti:', '')] = attrs[key]
+        this.modelNode[key.replace('activiti:', '')] = attrs[key]
       }
-      this.form['modelId'] = this.$route.params.id
+      this.modelNode['modelId'] = this.$route.params.id
     },
     exportProcessXmlByModelId() {
       exportProcessXmlByModelId(this.$route.params.id).then(response => {
@@ -312,9 +314,9 @@ export default {
         this.options = response.data
       })
     },
-    onSubmit() {
-      this.form.candidateGroups = this.defaultRole[1]
-      saveModel(this.form).then(response => {
+    saveModel() {
+      this.modelNode.candidateGroups = this.defaultRole[1]
+      saveModel(this.modelNode).then(response => {
         this.exportProcessXmlByModelId()
         this.$message({
           message: response.message,
@@ -336,7 +338,7 @@ export default {
     },
     handleSelect(row, event, column) {
       this.selectedForm = row
-      this.form.formKey = this.selectedForm.id
+      this.modelNode.formKey = this.selectedForm.id
       this.formVisible = false
     },
     handleFeild() {
@@ -357,23 +359,20 @@ export default {
     handleFormProperties() {
       this.formFieldVisible = false
       const formProperties = []
+      console.log(this.fields)
       for (let i = 0; i < this.fields.length; i++) {
         // 定义一个后台需要的表单属性json对象
         const gridEl = this.fields[i]
         const formProperty = {
           id: gridEl.model,
           name: gridEl.name,
-          writeable: gridEl.disable,
-          required: gridEl.required,
-          attributes: [
-            {
-              show: gridEl.show
-            }
-          ]
+          writeable: gridEl.options.disabled,
+          required: gridEl.options.required,
+          readable: gridEl.options.show
         }
         formProperties.push(formProperty)
       }
-      console.log(formProperties)
+      this.modelNode.formProperties = JSON.stringify(formProperties)
     },
     parseTime(date) {
       return parseTime(date)
