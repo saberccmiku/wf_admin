@@ -106,7 +106,7 @@
         <el-tag type="success">字段管理器</el-tag>
       </span> -->
       <el-table
-        :data="fields"
+        :data="selectedForm.formProperties"
         style="width: 100%"
       >
         <el-table-column
@@ -114,7 +114,7 @@
           width="180"
         >
           <template slot-scope="scope">
-            <span style="margin-left: 10px">{{ scope.row.model }}</span>
+            <span style="margin-left: 10px">{{ scope.row.id }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -128,7 +128,7 @@
         <el-table-column label="显示/隐藏">
           <template slot-scope="scope">
             <el-switch
-              v-model="scope.row.options.show"
+              v-model="scope.row.readable"
               active-text="显示"
               inactive-text="隐藏"
             />
@@ -137,7 +137,7 @@
         <el-table-column label="只读/编辑">
           <template slot-scope="scope">
             <el-switch
-              v-model="scope.row.options.disabled"
+              v-model="scope.row.writeable"
               active-text="只读"
               inactive-text="编辑"
             />
@@ -190,6 +190,7 @@ export default {
       formVisible: false,
       formList: null,
       selectedForm: {},
+      olderSelectedForm: {},
       listLoading: true,
       listQuery: {
         total: 0,
@@ -264,6 +265,9 @@ export default {
               const currentForm = this.processConfig.formMap[element.businessObject.id]
               if (currentForm) {
                 this.selectedForm = this.processConfig.formMap[element.businessObject.id]
+                console.log(this.processConfig.formMap)
+                this.olderSelectedForm = this.selectedForm
+                console.log(this.selectedForm)
               }
               this.splitBusiness2Json(element.businessObject)
               // 处理联级选择器初选值
@@ -337,42 +341,52 @@ export default {
       })
     },
     handleSelect(row, event, column) {
+      this.olderSelectedForm = this.selectedForm
       this.selectedForm = row
       this.modelNode.formKey = this.selectedForm.id
       this.formVisible = false
     },
     handleFeild() {
-      this.fields.splice(0, this.fields.length)
-      const formElArr = JSON.parse(this.selectedForm.json).list
-      for (let i = 0; i < formElArr.length; i++) {
-        if (formElArr[i].type === 'grid') {
-          const gridElArr = formElArr[i].columns
-          for (let j = 0; j < gridElArr.length; j++) {
-            this.fields.push(gridElArr[j].list[0])
-          }
+      // 当第表单变化时要重新加载字段信息
+      if (this.olderSelectedForm.id !== this.selectedForm.id) {
+        this.$confirm('表单已变更,继续操作将会覆盖表单字段的配置信息, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.modelNode.candidateGroups = this.defaultRole[1]
+          saveModel(this.modelNode).then(response => {
+            exportProcessXmlByModelId(this.$route.params.id).then(response => {
+              this.processConfig = response.data
+              this.chart = response.data.processXml
+              this.showChart()
+              this.selectedForm = response.data.formMap[this.modelNode.id]
+              this.formFieldVisible = true
+            })
+          })
+        })
+      } else {
+        // 当第一次选择表单未配置字段时 要去加载字段并预存
+        if (this.selectedForm.formProperties === null || this.selectedForm.formProperties === '') {
+          this.modelNode.candidateGroups = this.defaultRole[1]
+          saveModel(this.modelNode).then(response => {
+            exportProcessXmlByModelId(this.$route.params.id).then(response => {
+              this.processConfig = response.data
+              this.chart = response.data.processXml
+              this.showChart()
+              this.selectedForm = response.data.formMap[this.modelNode.id]
+              this.formFieldVisible = true
+            })
+          })
         } else {
-          this.fields.push(formElArr[i])
+          this.formFieldVisible = true
         }
       }
-      this.formFieldVisible = true
     },
     handleFormProperties() {
       this.formFieldVisible = false
-      const formProperties = []
-      console.log(this.fields)
-      for (let i = 0; i < this.fields.length; i++) {
-        // 定义一个后台需要的表单属性json对象
-        const gridEl = this.fields[i]
-        const formProperty = {
-          id: gridEl.model,
-          name: gridEl.name,
-          writeable: gridEl.options.disabled,
-          required: gridEl.options.required,
-          readable: gridEl.options.show
-        }
-        formProperties.push(formProperty)
-      }
-      this.modelNode.formProperties = JSON.stringify(formProperties)
+      this.modelNode.formProperties = JSON.stringify(this.selectedForm.formProperties)
+      console.log(this.modelNode.formProperties)
     },
     parseTime(date) {
       return parseTime(date)
