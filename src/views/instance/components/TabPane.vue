@@ -39,6 +39,11 @@
           <span>{{ row.businessKey }}</span>
         </template>
       </el-table-column>
+      <el-table-column label="业务名称" width="180px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.name }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="开始时间" width="160px" align="center">
         <template slot-scope="{row}">
           <span>{{ parseTime(new Date(row.startTime)) }}</span>
@@ -101,9 +106,9 @@
       </el-image>
       <div class="block">
         <el-timeline>
-          <el-timeline-item v-for="activity in activityList" :key="activity" :timestamp="parseTime(new Date(activity.startTime))" placement="top">
+          <el-timeline-item v-for="(activity,index) in activityList" :key="activity.id+index" :timestamp="parseTime(new Date(activity.startTime))" placement="top">
             <el-card>
-              <h4>{{ activity.actName }}审批</h4>
+              <h4>{{ activity.actName }}审批 任务ID:{{ activity.taskId }}  节点ID:{{ activity.actId }}</h4>
               <p>{{ activity.assigneeName==null||''?"专员": activity.assigneeName }} {{ activity.endTime==null||''?"正在审批":"提交于"+parseTime(new Date(activity.endTime)) }}</p>
               <p v-show="activity.comment!=null">意见：{{ activity.comment }}</p>
             </el-card>
@@ -164,6 +169,7 @@ export default {
     getList() {
       this.listLoading = true
       pageList(this.listQuery).then(response => {
+        console.log('install', response.data.records)
         this.list = response.data.records
         this.total = response.data.total
         // Just to simulate the time of the request
