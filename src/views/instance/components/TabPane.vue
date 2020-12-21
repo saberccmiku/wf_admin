@@ -69,7 +69,7 @@
           {{ row.tenantId }}
         </template>
       </el-table-column>
-      <el-table-column label="状态" align="center" width="230" class-name="small-padding fixed-width">
+      <el-table-column label="状态" align="center" width="110" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-tag v-if="row.endTime===null||row.endTime===''" type="success">
             运行中
