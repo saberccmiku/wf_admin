@@ -81,7 +81,7 @@
               filterable
               :filter-method="filterUser"
               filter-placeholder="请输入姓名"
-              :titles="['待选角色', '已有角色']"
+              :titles="['待选用户', '已有用户']"
               :button-texts="['移除', '添加']"
               :props="defaultUserProps"
             />
