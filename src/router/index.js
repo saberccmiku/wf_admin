@@ -29,7 +29,9 @@ import modelRouter from './modules/model'
     activeMenu: '/example/list'  if set path, the sidebar will highlight the path you set
   }
  */
-const language = localStorage.getItem('language') || (navigator.language === 'zh-CN' ? 'zh-CN' : 'en-US')
+const language =
+  localStorage.getItem('language') ||
+  (navigator.language === 'zh-CN' ? 'zh-CN' : 'en-US')
 /**
  * constantRoutes
  * a base page that does not have permission requirements
@@ -114,7 +116,11 @@ export const asyncRoutes = [
         path: 'edit/:id(\\d+)',
         component: () => import('@/views/instance/edit'),
         name: 'EditArticle',
-        meta: { title: 'Edit Article', noCache: true, activeMenu: '/instance/list' },
+        meta: {
+          title: 'Edit Article',
+          noCache: true,
+          activeMenu: '/instance/list'
+        },
         hidden: true
       }
     ]
@@ -186,8 +192,15 @@ export const asyncRoutes = [
         component: () => import('@/views/permission/role'),
         name: 'PagePermission',
         meta: {
-          title: '角色列表',
-          roles: ['admin'] // or you can only set roles in sub nav
+          title: '角色列表'
+        }
+      },
+      {
+        path: 'list',
+        component: () => import('@/views/permission/list'),
+        name: 'roleList',
+        meta: {
+          title: '角色项'
         }
       }
     ]
@@ -244,11 +257,12 @@ export const asyncRoutes = [
   { path: '*', redirect: '/404', hidden: true }
 ]
 
-const createRouter = () => new Router({
-  // mode: 'history', // require service support
-  scrollBehavior: () => ({ y: 0 }),
-  routes: constantRoutes
-})
+const createRouter = () =>
+  new Router({
+    // mode: 'history', // require service support
+    scrollBehavior: () => ({ y: 0 }),
+    routes: constantRoutes
+  })
 
 const router = createRouter()
 

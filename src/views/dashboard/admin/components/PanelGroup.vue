@@ -77,8 +77,9 @@ export default {
     selectPanelGroup() {
       selectPanelGroup().then(response => {
         const arr = response.data
+        // console.log('selectPanelGroup', arr)
         for (let i = 0; i < arr.length; i++) {
-          this.panelGroup[arr[i].type] = arr[i].total
+          this.panelGroup[arr[i].type] = arr[i].total ? Number(arr[i].total) : 0
         }
       })
     }

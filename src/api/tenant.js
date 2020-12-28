@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-// 流程模型
+// 租户列表
 export function getTenantList() {
   return request({
     url: '/wf/actTenants/getTenantList',
