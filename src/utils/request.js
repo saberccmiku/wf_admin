@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { MessageBox, Message } from 'element-ui'
+import { MessageBox, Message, Loading } from 'element-ui'
 import store from '@/store'
 import { getToken } from '@/utils/auth'
 
@@ -10,6 +10,34 @@ const service = axios.create({
   timeout: 5000 // request timeout
 })
 
+/* 当页面有两个接口时，第一个接口loading的close事件会直接将第二个接口的loading实例也close */
+let loadingInstance = null
+function startLoading() {
+  loadingInstance = Loading.service({
+    fullscreen: true,
+    text: '拼命加载中...',
+    background: 'rgba(0, 0, 0, 0.8)'
+  })
+}
+function endLoading() {
+  setTimeout(() => {
+    loadingInstance.close()
+  }, 1000)
+}
+let needLoadingRequestCount = 0
+function showFullScreenLoading() {
+  if (needLoadingRequestCount === 0) {
+    startLoading()
+  }
+  needLoadingRequestCount++
+}
+function tryHideFullScreenLoading() {
+  if (needLoadingRequestCount <= 0) return
+  needLoadingRequestCount--
+  if (needLoadingRequestCount === 0) {
+    endLoading()
+  }
+}
 // request interceptor
 service.interceptors.request.use(
   config => {
@@ -21,10 +49,12 @@ service.interceptors.request.use(
       // please modify it according to the actual situation
       config.headers['X-Token'] = getToken()
     }
+    showFullScreenLoading()
     return config
   },
   error => {
     // do something with request error
+    tryHideFullScreenLoading()
     console.log(error) // for debug
     return Promise.reject(error)
   }
@@ -43,6 +73,7 @@ service.interceptors.response.use(
    * You can also judge the status by HTTP Status Code
    */
   response => {
+    tryHideFullScreenLoading()
     const res = response.data
 
     // if the custom code is not 20000, it is judged as an error.
@@ -72,6 +103,7 @@ service.interceptors.response.use(
     }
   },
   error => {
+    tryHideFullScreenLoading()
     console.log('err' + error) // for debug
     Message({
       message: error.message,

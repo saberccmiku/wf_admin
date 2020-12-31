@@ -65,7 +65,7 @@
     </el-container>
 
     <el-dialog
-      :visible.sync="dialogUserVisible"
+      :visible.sync="dialogUsersVisible"
     >
       <template>
         <el-card class="box-card" shadow="never">
@@ -86,8 +86,8 @@
               :props="defaultUserProps"
             />
 
-            <el-button type="success" style="margin-left:20%;margin-top:40px;" @click="save()">保存</el-button>
-            <el-button type="warning" style="margin-left:200px;margin-top:40px;" @click="reset()">重置</el-button>
+            <el-button type="success" style="margin-left:20%;margin-top:40px;" @click="saveUsers()">保存</el-button>
+            <el-button type="warning" style="margin-left:200px;margin-top:40px;" @click="resetUsers()">重置</el-button>
           </div>
         </el-card>
       </template>
@@ -97,15 +97,15 @@
 </template>
 
 <script>
-import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+import Pagination from '@/components/Pagination'
 import { getTenantList } from '@/api/tenant'
-import { getRoles, getAllUsers, getOtherAllUsers } from '@/api/role'
+import { getRoles, getAllUsers, getOtherAllUsers, saveRoleUsers } from '@/api/role'
 export default {
   components: { Pagination },
   data() {
     return {
       isShowLoadding: false,
-      dialogUserVisible: false,
+      dialogUsersVisible: false,
       listQuery: {
         total: 10,
         current: 1,
@@ -170,7 +170,7 @@ export default {
     getAllUsers() {
       getAllUsers(this.userQuery).then(res => {
         res.data.map((it, index) => {
-          console.log('getAllUsers', it)
+          this.selectedUsers.splice(0, this.selectedUsers.length)
           this.selectedUsers.push(it.userId)
         })
       })
@@ -179,6 +179,23 @@ export default {
       getOtherAllUsers().then(res => {
         this.users = res.data
         this.users.push({ id: '110', phone: '110', name: '企业用户' })
+      })
+    },
+    saveRoleUsers(actTenantUsers) {
+      this.$confirm('此操作将新增流程版本,改变原来的业务需求, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        // this.listLoading = true
+        saveRoleUsers(actTenantUsers).then(res => {
+          this.$notify({
+            title: 'Success',
+            message: '操作成功',
+            type: 'success',
+            duration: 2000
+          })
+        })
       })
     },
     filterNode(value, data) {
@@ -197,7 +214,7 @@ export default {
       // console.log(index, row)
     },
     handleUsers(index, row) {
-      this.dialogUserVisible = true
+      this.dialogUsersVisible = true
       this.userQuery.tenantId = row.tenantId
       this.userQuery.roleId = row.id
       this.getAllUsers()
@@ -205,6 +222,19 @@ export default {
     },
     filterUser(query, item) {
       return item.name.indexOf(query) > -1
+    },
+    saveUsers() {
+      const actTenantUsers = []
+      this.users.map((item, index) => {
+        this.selectedUsers.map((it, position) => {
+          if (item.phone === it) {
+            actTenantUsers.push({ userId: item.phone, tenantId: this.userQuery.tenantId, roleId: this.userQuery.roleId, name: item.name })
+          }
+        })
+      })
+      // this.saveRoleUsers(actTenantUsers)
+      // this.dialogUsersVisible = false
+      // console.log('actTenantUsers', actTenantUsers)
     }
   }
 }

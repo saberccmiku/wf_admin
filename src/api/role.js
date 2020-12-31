@@ -53,3 +53,12 @@ export function getOtherAllUsers(data) {
   })
 }
 
+// 保存角色用户
+export function saveRoleUsers(data) {
+  return request({
+    url: '/wf/actTenantUsers/saveRoleUsers',
+    method: 'post',
+    data
+  })
+}
+
