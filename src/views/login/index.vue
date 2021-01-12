@@ -1,60 +1,94 @@
 <template>
   <div class="login-container">
-    <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" autocomplete="on" label-position="left">
+    <div class="login-main">
+      <el-form
+        ref="loginForm"
+        :model="loginForm"
+        :rules="loginRules"
+        class="login-form"
+        autocomplete="on"
+        label-position="left"
+      >
 
-      <div class="title-container">
-        <h3 class="title">工作流平台系统</h3>
-      </div>
+        <div
+          data-v-cea07eda=""
+          class="yd_img"
+        ><img
+          style="width:100px;height:100px"
+          data-v-cea07eda=""
+          src="../../assets/login/logo.png"
+          alt="chahua"
+        ></div>
+        <div class="title-container">
+          <h3>工作流管理系统</h3>
+        </div>
 
-      <el-form-item prop="firstName">
-        <span class="svg-container">
-          <svg-icon icon-class="user" />
-        </span>
-        <el-input
-          ref="firstName"
-          v-model="loginForm.firstName"
-          placeholder="firstName"
-          name="firstName"
-          type="text"
-          tabindex="1"
-          autocomplete="on"
-        />
-      </el-form-item>
-
-      <el-tooltip v-model="capsTooltip" content="Caps lock is On" placement="right" manual>
-        <el-form-item prop="password">
+        <el-form-item prop="firstName">
           <span class="svg-container">
-            <svg-icon icon-class="password" />
+            <svg-icon icon-class="user" />
           </span>
           <el-input
-            :key="passwordType"
-            ref="password"
-            v-model="loginForm.password"
-            :type="passwordType"
-            placeholder="Password"
-            name="password"
-            tabindex="2"
+            ref="firstName"
+            v-model="loginForm.firstName"
+            placeholder="firstName"
+            name="firstName"
+            type="text"
+            tabindex="1"
             autocomplete="on"
-            @keyup.native="checkCapslock"
-            @blur="capsTooltip = false"
-            @keyup.enter.native="handleLogin"
           />
-          <span class="show-pwd" @click="showPwd">
-            <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
-          </span>
         </el-form-item>
-      </el-tooltip>
 
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">登录</el-button>
-    </el-form>
+        <el-tooltip
+          v-model="capsTooltip"
+          content="Caps lock is On"
+          placement="right"
+          manual
+        >
+          <el-form-item prop="password">
+            <span class="svg-container">
+              <svg-icon icon-class="password" />
+            </span>
+            <el-input
+              :key="passwordType"
+              ref="password"
+              v-model="loginForm.password"
+              :type="passwordType"
+              placeholder="Password"
+              name="password"
+              tabindex="2"
+              autocomplete="on"
+              @keyup.native="checkCapslock"
+              @blur="capsTooltip = false"
+              @keyup.enter.native="handleLogin"
+            />
+            <span
+              class="show-pwd"
+              @click="showPwd"
+            >
+              <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
+            </span>
+          </el-form-item>
+        </el-tooltip>
 
-    <el-dialog title="Or connect with" :visible.sync="showDialog">
-      Can not be simulated on local, so please combine you own business simulation! ! !
-      <br>
-      <br>
-      <br>
-      <social-sign />
-    </el-dialog>
+        <el-button
+          :loading="loading"
+          type="primary"
+          style="width:100%;margin-bottom:30px;"
+          @click.native.prevent="handleLogin"
+        >登录</el-button>
+      </el-form>
+
+      <el-dialog
+        title="Or connect with"
+        :visible.sync="showDialog"
+      >
+        Can not be simulated on local, so please combine you own business simulation! ! !
+        <br>
+        <br>
+        <br>
+        <social-sign />
+      </el-dialog>
+    </div>
   </div>
 </template>
 
@@ -82,7 +116,7 @@ export default {
     }
     return {
       loginForm: {
-        firstName: 'admin',
+        firstName: 'admin', // admin
         password: '123456'
       },
       loginRules: {
@@ -189,8 +223,8 @@ export default {
 /* 修复input 背景不协调 和光标变色 */
 /* Detail see https://github.com/PanJiaChen/vue-element-admin/pull/927 */
 
-$bg:#283443;
-$light_gray:#fff;
+$bg: #283443;
+$light_gray: #fff;
 $cursor: #fff;
 
 @supports (-webkit-mask: none) and (not (cater-color: $cursor)) {
@@ -201,6 +235,7 @@ $cursor: #fff;
 
 /* reset element-ui css */
 .login-container {
+  position: relative;
   .el-input {
     display: inline-block;
     height: 47px;
@@ -230,24 +265,39 @@ $cursor: #fff;
     color: #454545;
   }
 }
+.login-main {
+  background: hsla(0, 0%, 100%, 0.7);
+  width: 450px;
+  height: 550px;
+  box-shadow: 4px 0 16px 0 rgba(18, 62, 165, 0.09);
+  border-radius: 4px;
+  padding: 16px 0;
+  display: flex;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
+  margin: auto;
+}
 </style>
 
 <style lang="scss" scoped>
-$bg:#2d3a4b;
-$dark_gray:#889aa4;
-$light_gray:#eee;
+$bg: #2d3a4b;
+$dark_gray: #889aa4;
+$light_gray: #eee;
 
 .login-container {
   min-height: 100%;
   width: 100%;
-  background-color: $bg;
+  background: url(../../assets/login/city_wucahng.jpg);
   overflow: hidden;
 
   .login-form {
-    position: relative;
+    text-align: center;
     width: 520px;
     max-width: 100%;
-    padding: 160px 35px 0;
+    padding: 35px 35px 0;
     margin: 0 auto;
     overflow: hidden;
   }
@@ -273,15 +323,15 @@ $light_gray:#eee;
   }
 
   .title-container {
-    position: relative;
-
-    .title {
-      font-size: 26px;
-      color: $light_gray;
-      margin: 0px auto 40px auto;
-      text-align: center;
-      font-weight: bold;
-    }
+    justify-content: center;
+    color: #01136d !important;
+    font-size: 30px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0 !important;
+    line-height: 1.4;
+    text-shadow: 0 0 10px #fff, 0 0 10px #fff, 0 0 10px #fff, 0 0 10px #fff,
+      0 0 10px #fff, 0 0 10px #fff, 0 0 10px #fff, 0 0 10px #fff;
+    color: #01136d;
   }
 
   .show-pwd {
