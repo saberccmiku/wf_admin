@@ -24,12 +24,12 @@ const modelRouter = {
       name: 'ProcdefList',
       meta: { title: '流程定义', icon: 'tree-table' }
     },
-    {
-      path: 'processDesign/:id(\\d+)',
-      component: () => import('@/views/model/processDesign'),
-      name: 'processDesign',
-      meta: { title: '流程设计', icon: 'edit' }
-    },
+    // {
+    //   path: 'processDesign/:id(\\d+)',
+    //   component: () => import('@/views/model/processDesign'),
+    //   name: 'processDesign',
+    //   meta: { title: '流程设计', icon: 'edit' }
+    // },
     {
       path: 'processConfig/:id(\\d+)',
       component: () => import('@/views/model/processConfig'),

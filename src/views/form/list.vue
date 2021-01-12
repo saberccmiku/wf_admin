@@ -26,7 +26,6 @@
 
     <el-table
       :key="tableKey"
-      v-loading="listLoading"
       :data="list"
       border
       fit
@@ -138,10 +137,12 @@ export default {
       tableKey: 0,
       list: null,
       total: 0,
-      listLoading: true,
       listQuery: {
         current: 1,
-        size: 20
+        size: 20,
+        data: {
+          name: null
+        }
       },
       widgetForm: {
         list: [],
@@ -189,11 +190,9 @@ export default {
   },
   methods: {
     getList() {
-      this.listLoading = true
       pageForm(this.listQuery).then(response => {
         this.list = response.data.records
         this.total = response.data.total
-        this.listLoading = false
       })
     },
     getTenantList() {

@@ -84,7 +84,7 @@
           <el-button type="primary" size="mini" @click="handleActivity(row)">
             活动
           </el-button>
-          <router-link :to="'/instance/formDesigin'">
+          <router-link :to="'/formManager/test'">
             <el-button type="success" size="small">
               表单
             </el-button>
